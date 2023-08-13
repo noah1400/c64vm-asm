@@ -184,3 +184,19 @@ char c64token_scan(struct c64token *t)
 
     return 1;
 }
+
+int c64token_lookup(char *s)
+{
+    int i;
+
+    for (i = 0; i < REGISTER_COUNT; i++) {
+        if (0 == strcmp(Registers[i], s)) {
+            return T_REG;
+        }
+    }
+
+    // TODO: add instructions here
+    // and return T_INSTR
+
+    return 0;
+}

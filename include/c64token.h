@@ -6,8 +6,10 @@
 #include <c64utils.h>
 
 #define TEXT_LEN 1024 // max length of identifier
+#define REGISTER_COUNT 14
 
 extern struct c64token Token;
+extern char *Registers[REGISTER_COUNT];
 extern char Text[TEXT_LEN + 1]; // Last identifier read
 extern char Putback;
 extern int Line;
