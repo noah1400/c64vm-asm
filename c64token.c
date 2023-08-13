@@ -1,5 +1,20 @@
 #include <c64token.h>
 
+struct c64token *c64token_createToken(struct c64token *t)
+{
+    struct c64token *newToken = (struct c64token *)malloc(sizeof(struct c64token));
+    if (newToken == NULL) {
+        fatal("failed to maloc() in c64token_createToken()");
+    }
+    newToken->type = t->type;
+    strcpy(newToken->str, t->str);
+    newToken->val = t->val;
+    newToken->len = t->len;
+    newToken->line = t->line;
+    newToken->pos = t->pos;
+    return newToken;
+}
+
 void c64token_putback(char c)
 {
     Putback = c;
