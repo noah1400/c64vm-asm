@@ -2,6 +2,7 @@
 #define _c64utils_h_
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <c64token.h>
 #include <c64utils.h>
 

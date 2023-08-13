@@ -3,7 +3,7 @@
 
 
 #include <stdio.h>
-#include <c64token.h>
+#include <c64tokenizer.h>
 
 void c64asm_init(void);
 

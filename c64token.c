@@ -1,10 +1,10 @@
 #include <c64token.h>
 
-struct c64token *c64token_createToken(struct c64token *t)
+struct c64token *c64token_copy(struct c64token *t)
 {
     struct c64token *newToken = (struct c64token *)malloc(sizeof(struct c64token));
     if (newToken == NULL) {
-        fatal("failed to maloc() in c64token_createToken()");
+        c64utils_fatal("failed to maloc() in c64token_createToken()");
     }
     newToken->type = t->type;
     strcpy(newToken->str, t->str);
@@ -67,7 +67,7 @@ int c64token_scanint(char c)
     }
 
     if (!f) {
-        fatal("integer expected");
+        c64utils_fatal("integer expected");
     }
 
     c64token_putback(c);
@@ -87,7 +87,7 @@ int c64token_scanhex(char c)
     }
 
     if (!f) {
-        fatal("hexadecimal number expected");
+        c64utils_fatal("hexadecimal number expected");
     }
 
     c64token_putback(c);
@@ -101,7 +101,7 @@ int c64token_scanident(char c, char *buf, int lim)
     while (isalpha(c) || isdigit(c) || '_' == c)
     {
         if (lim - 1 == i) {
-            fatal("identifier too long");
+            c64utils_fatal("identifier too long");
         } else if (i < lim - 1) {
             buf[i++] = c;
         }
@@ -125,7 +125,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_EOF;
             t->line = Line;
             t->pos = Pos;
-            t->str = "EOF";
+            strcpy(t->str, "EOF");
             t->len = 3;
             t->val = 0;
             break;
@@ -133,7 +133,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_COLON;
             t->line = Line;
             t->pos = Pos;
-            t->str = ":";
+            strcpy(t->str, ":");
             t->len = 1;
             t->val = 0;
             break;
@@ -141,7 +141,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_COMMA;
             t->line = Line;
             t->pos = Pos;
-            t->str = ",";
+            strcpy(t->str, ",");
             t->len = 1;
             t->val = 0;
             break;
@@ -149,7 +149,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_LBRACE;
             t->line = Line;
             t->pos = Pos;
-            t->str = "{";
+            strcpy(t->str, "{");
             t->len = 1;
             t->val = 0;
             break;
@@ -157,7 +157,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_RBRACE;
             t->line = Line;
             t->pos = Pos;
-            t->str = "}";
+            strcpy(t->str, "}");
             t->len = 1;
             t->val = 0;
             break;
@@ -165,7 +165,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_IMM;
             t->line = Line;
             t->pos = Pos;
-            t->str = "$";
+            strcpy(t->str, "$");
             t->len = 1;
             t->val = c64token_scanhex(c64token_next());
             break;
@@ -173,7 +173,7 @@ char c64token_scan(struct c64token *t)
             t->type = T_IMM;
             t->line = Line;
             t->pos = Pos;
-            t->str = "#";
+            strcpy(t->str, "#");
             t->len = 1;
             t->val = c64token_scanint(c64token_next());
             break;
@@ -194,7 +194,7 @@ char c64token_scan(struct c64token *t)
                 }
                 break;
             }
-            fatalc("unknown character", c);
+            c64utils_fatalc("unknown character", c);
     }
 
     return 1;
@@ -214,4 +214,14 @@ int c64token_lookup(char *s)
     // and return T_INSTR
 
     return 0;
+}
+
+void c64token_print(struct c64token *t)
+{
+    printf("type: %d\n", t->type);
+    printf("str: %s\n", t->str);
+    printf("val: %d\n", t->val);
+    printf("line: %d\n", t->line);
+    printf("pos: %d\n", t->pos);
+    printf("len: %d\n\n", t->len);
 }

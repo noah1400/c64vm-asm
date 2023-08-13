@@ -2,6 +2,8 @@
 #define _c64token_h_
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <c64utils.h>
 
@@ -31,7 +33,7 @@ enum {
 
 struct c64token {
     int type;
-    char *str;
+    char str[100];
     int val;
     int len;
     int line;
@@ -47,5 +49,8 @@ int c64token_scanhex(char c);
 int c64token_scanident(char c, char *buf, int lim);
 char c64token_scan(struct c64token *t);
 int c64token_lookup(char *s);
+struct c64token *c64token_copy(struct c64token *t);
+
+void c64token_print(struct c64token *t);
 
 #endif // _c64token_h_

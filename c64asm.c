@@ -1,7 +1,21 @@
 #include <c64asm.h>
 
+#include <c64token.h>
+
+struct c64token Token;
+char *Registers[REGISTER_COUNT];
+char Text[TEXT_LEN + 1];
+char Putback;
+int Line;
+int Pos;
+FILE *Infile;
+FILE *Outfile;
+
 void c64asm_init(void)
 {
+    struct c64token t = {0};
+    Token = t;
+
     Putback = '\n';
     Line = 1;
     Pos = 1;
@@ -23,4 +37,32 @@ void c64asm_init(void)
     Registers[12] = "R7";
     Registers[13] = "R8";
     
+    Infile = NULL;
+    Outfile = NULL;
+}
+
+int main(int argc, char *argv[])
+{
+    c64asm_init();
+    if (argc < 2) {
+        c64utils_fatal("no input file");
+    }
+    if (argc < 3) {
+        c64utils_fatal("no output file");
+    }
+    Infile = fopen(argv[1], "r");
+    if (!Infile) {
+        c64utils_fatal("cannot open input file");
+    }
+    Outfile = fopen(argv[2], "w");
+    if (!Outfile) {
+        c64utils_fatal("cannot open output file");
+    }
+    struct c64tokenlist *tokens = c64tokenize();
+    c64tokenlist_print(tokens);
+
+    fclose(Infile);
+    fclose(Outfile);
+
+    return 0;
 }
