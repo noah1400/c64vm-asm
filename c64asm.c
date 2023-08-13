@@ -64,5 +64,7 @@ int main(int argc, char *argv[])
     fclose(Infile);
     fclose(Outfile);
 
+    c64tokenlist_free(tokens);
+
     return 0;
 }

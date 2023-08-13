@@ -1,1 +1,4 @@
 LDI R1, #1234
+ADDI R8, $F2Af
+
+LDI ACC, #

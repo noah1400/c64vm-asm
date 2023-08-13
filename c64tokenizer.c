@@ -27,7 +27,7 @@ struct c64tokenlist *c64tokenize(void)
         c64utils_fatal("unexpected token");
     }
 
-    current->token = c64token_copy(&Token); // should be T_EOF
+    current = c64tokenlist_add(current, &Token); // last token
 
     return first;
 }
