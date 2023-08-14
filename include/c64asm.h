@@ -14,12 +14,11 @@ You should have received a copy of the MIT License
 along with c64asm. If not, see <https://mit-license.org/>.
 */
 #ifndef _c64asm_h_
-#define _c64asm_h_
+# define _c64asm_h_
 
+# include <c64tokenizer.h>
+# include <stdio.h>
 
-#include <stdio.h>
-#include <c64tokenizer.h>
-
-void c64asm_init(void);
+void	c64asm_init(void);
 
 #endif // _c64asm_h_
