@@ -219,11 +219,6 @@ int c64token_lookup(char *s)
         }
     }
 
-    // TODO: add instructions here
-    // and return T_INSTR
-
-    char instr_count = 94;
-
     char *instructions[94] = {
         "LDI",
         "LDBI",
@@ -321,7 +316,7 @@ int c64token_lookup(char *s)
         "HLT"
     };
 
-    for (i = 0; i < instr_count; i++) {
+    for (i = 0; i < 94; i++) {
         if (0 == strcmp(instructions[i], s)) {
             return T_INST;
         }
