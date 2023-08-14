@@ -215,6 +215,111 @@ int c64token_lookup(char *s)
     // TODO: add instructions here
     // and return T_INSTR
 
+    char instr_count = 94;
+
+    char *instructions[94] = {
+        "LDI",
+        "LDBI",
+        "LDWI",
+        "LDDI",
+        "LDM",
+        "LDBM",
+        "LDWM",
+        "LDDM",
+        "ST",
+        "STB",
+        "STW",
+        "STD",
+        "TF",
+        "ADDI",
+        "SUBI",
+        "MULI",
+        "DIVI",
+        "MODI",
+        "MULIS",
+        "DIVIS",
+        "ADD",
+        "SUB",
+        "MUL",
+        "DIV",
+        "MOD",
+        "MULS",
+        "DIVS",
+        "ANDI",
+        "ORI",
+        "XORI",
+        "NOTI",
+        "SHLI",
+        "SHRI",
+        "RORI",
+        "ROLI",
+        "AND",
+        "OR",
+        "XOR",
+        "NOT",
+        "SHL",
+        "SHR",
+        "ROR",
+        "ROL",
+        "CMP",
+        "CMPI",
+        "JMP",
+        "JEQ",
+        "JNE",
+        "JGT",
+        "JLT",
+        "JGE",
+        "JLE",
+        "BRA",
+        "BEQ",
+        "BNE",
+        "BGT",
+        "BLT",
+        "BGE",
+        "BLE",
+        "JMPR",
+        "JEQR",
+        "JNER",
+        "JGTR",
+        "JLTR",
+        "JGER",
+        "JLER",
+        "BRAR",
+        "BEQR",
+        "BNER",
+        "BGTR",
+        "BLTR",
+        "BGER",
+        "BLER",
+        "RET",
+        "PUSH",
+        "PUSHI",
+        "POP",
+        "CALL",
+        "CALLR",
+        "RTC",
+        "CLC",
+        "SEC",
+        "CLZ",
+        "SEZ",
+        "CLN",
+        "SEN",
+        "CLV",
+        "SEV",
+        "CLI",
+        "SEI",
+        "INT",
+        "RTI",
+        "NOP",
+        "HLT"
+    };
+
+    for (i = 0; i < instr_count; i++) {
+        if (0 == strcmp(instructions[i], s)) {
+            return T_INST;
+        }
+    }
+
     return 0;
 }
 
@@ -247,6 +352,8 @@ char *c64token_typestr(int type)
             return "T_REG";
         case T_IDENT:
             return "T_IDENT";
+        case T_INST:
+            return "T_INST";    
         default:
             return "T_UNKNOWN";
     }
