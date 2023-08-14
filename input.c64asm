@@ -1,4 +1,9 @@
+:start
 LDI R1, #1234
+BRA subroutine
 ADDI R8, $F2Af
+JMP start
 
+:subroutine
 LDI ACC, #1
+RET

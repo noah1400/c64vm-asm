@@ -110,6 +110,11 @@ int c64token_scanident(char c, char *buf, int lim)
         c = c64token_next();
     }
 
+    if (i == 0)
+    {
+        c64utils_fatal("identifier expected");
+    }
+
     c64token_putback(c);
     buf[i] = '\0';
     return i;
@@ -132,11 +137,13 @@ char c64token_scan(struct c64token *t)
             t->val = 0;
             break;
         case ':':
-            t->type = T_COLON;
+            c = c64token_next();
+            c64token_scanident(c, Text, TEXT_LEN);
+            strcpy(t->str, Text);
             t->line = Line;
             t->pos = Pos;
-            strcpy(t->str, ":");
-            t->len = 1;
+            t->len = strlen(Text);
+            t->type = T_LABEL;
             t->val = 0;
             break;
         case ',':
@@ -353,7 +360,9 @@ char *c64token_typestr(int type)
         case T_IDENT:
             return "T_IDENT";
         case T_INST:
-            return "T_INST";    
+            return "T_INST";
+        case T_LABEL:
+            return "T_LABEL";    
         default:
             return "T_UNKNOWN";
     }
