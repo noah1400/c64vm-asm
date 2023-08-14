@@ -28,7 +28,8 @@ enum {
     T_LABEL,
     T_COMMA, T_COLON,
     T_RBRACE, T_LBRACE,
-    T_IDENT
+    T_IDENT,
+    T_VAR
 };
 
 char *c64token_typestr(int type);

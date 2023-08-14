@@ -1,9 +1,20 @@
-:start
-LDI R1, #1234
-BRA subroutine
-ADDI R8, $F2Af
-JMP start
 
-:subroutine
-LDI ACC, #1
-RET
+CONST a #1
+VAR b #0
+
+:hexToAscii
+
+PSH R1
+PSH R2
+
+LDI R1, #30     ; '0'
+ST R1, $0f0f    ; at string pointer
+LDI R1, #78     ; 'x'
+ST R1, $0f0f
+
+ST R1, !b
+
+; Test comment
+
+POP R2          ; Restore Registers
+POP R1

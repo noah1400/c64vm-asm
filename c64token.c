@@ -136,6 +136,22 @@ char c64token_scan(struct c64token *t)
             t->len = 3;
             t->val = 0;
             break;
+        case ';':
+            // comment
+            while (c64token_next() != '\n') {
+                ;
+            }
+            return c64token_scan(t);
+        case '!':
+            c = c64token_next();
+            c64token_scanident(c, Text, TEXT_LEN);
+            strcpy(t->str, Text);
+            t->line = Line;
+            t->pos = Pos;
+            t->len = strlen(Text);
+            t->type = T_VAR;
+            t->val = 0;
+            break;
         case ':':
             c = c64token_next();
             c64token_scanident(c, Text, TEXT_LEN);
@@ -357,7 +373,9 @@ char *c64token_typestr(int type)
         case T_INST:
             return "T_INST";
         case T_LABEL:
-            return "T_LABEL";    
+            return "T_LABEL";
+        case T_VAR:
+            return "T_VAR";   
         default:
             return "T_UNKNOWN";
     }
