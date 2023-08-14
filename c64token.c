@@ -218,10 +218,34 @@ int c64token_lookup(char *s)
 
 void c64token_print(struct c64token *t)
 {
-    printf("type: %d\n", t->type);
-    printf("str: %s\n", t->str);
-    printf("val: %d\n", t->val);
-    printf("line: %d\n", t->line);
-    printf("pos: %d\n", t->pos);
-    printf("len: %d\n\n", t->len);
+    printf("%s (%d) at %d:%d: %s", c64token_typestr(t->type), t->type, t->line, t->pos, t->str);
+    if (T_IMM == t->type) {
+        printf(" = $%016X", t->val);
+    }
+    printf("\n");
+}
+
+char *c64token_typestr(int type)
+{
+    switch(type)
+    {
+        case T_EOF:
+            return "T_EOF";
+        case T_COLON:
+            return "T_COLON";
+        case T_COMMA:
+            return "T_COMMA";
+        case T_LBRACE:
+            return "T_LBRACE";
+        case T_RBRACE:
+            return "T_RBRACE";
+        case T_IMM:
+            return "T_IMM";
+        case T_REG:
+            return "T_REG";
+        case T_IDENT:
+            return "T_IDENT";
+        default:
+            return "T_UNKNOWN";
+    }
 }

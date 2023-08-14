@@ -31,6 +31,8 @@ enum {
     T_IDENT,
 };
 
+char *c64token_typestr(int type);
+
 struct c64token {
     int type;
     char str[100];
