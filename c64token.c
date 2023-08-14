@@ -54,9 +54,10 @@ char c64token_skip(void)
     return c;
 }
 
-int c64token_scanint(char c)
+size_t c64token_scanint(char c)
 {
-    int k, val = 0;
+    size_t val = 0;
+    int k;
 
     char f = 0;
 
@@ -74,9 +75,10 @@ int c64token_scanint(char c)
     return val;
 }
 
-int c64token_scanhex(char c)
+size_t c64token_scanhex(char c)
 {
-    int k, val = 0;
+    size_t val = 0;
+    int k;
 
     char f = 0;
 
@@ -220,7 +222,7 @@ void c64token_print(struct c64token *t)
 {
     printf("%s (%d) at %d:%d: %s", c64token_typestr(t->type), t->type, t->line, t->pos, t->str);
     if (T_IMM == t->type) {
-        printf(" = $%016X", t->val);
+        printf(" = $%016llX", t->val);
     }
     printf("\n");
 }
