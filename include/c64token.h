@@ -49,6 +49,25 @@ enum
 	T_VAR
 };
 
+// registers
+enum
+{
+	R_ACC,
+	R_IP,
+	R_SP,
+	R_FP,
+	R_MB,
+	R_IM,
+	R_R1,
+	R_R2,
+	R_R3,
+	R_R4,
+	R_R5,
+	R_R6,
+	R_R7,
+	R_R8
+};
+
 char					*c64token_typestr(int type);
 
 struct					c64token
@@ -70,6 +89,10 @@ size_t					c64token_scanhex(char c);
 int						c64token_scanident(char c, char *buf, int lim);
 char					c64token_scan(struct c64token *t);
 int						c64token_lookup(char *s);
+int						c64token_lookupRegister(char *s);
+int						c64token_lookupInstruction(char *s);
+int						c64token_mapInstruction(char *s);
+int						c64token_mapRegister(char *s);
 struct c64token			*c64token_copy(struct c64token *t);
 
 void					c64token_print(struct c64token *t);
