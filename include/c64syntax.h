@@ -16,6 +16,11 @@ along with c64asm. If not, see <https://mit-license.org/>.
 #ifndef _c64syntax_h_
 # define _c64syntax_h_
 
+# include <c64token.h>
+# include <c64tokenizer.h>
+# include <c64utils.h>
+# include <stdarg.h>
+
 // instructions
 // Order is important !
 enum
@@ -119,12 +124,12 @@ enum
 // addressing modes
 enum
 {
-	SING_REG, // single register
-	SING_IMM, // single immediate
-	REG_IMM,  // register and immediate
-	REG_REG,  // register and register
-	IMM_SYM,  // immediate and symbol
-	NONE,     // no operands
+	M_SING_REG, // single register
+	M_SING_IMM, // single immediate
+	M_REG_IMM,  // register and immediate
+	M_REG_REG,  // register and register
+	M_IMM_SYM,  // immediate and symbol
+	M_NONE,     // no operands
 };
 
 // operand types
@@ -134,6 +139,13 @@ enum
 	OP_IMM,
 	OP_SYM,
 	OP_NONE
+};
+
+struct							c64syntax
+{
+	int v; // matched or not
+	char						expected[100];
+	char						got[100];
 };
 
 struct							c64symbol
@@ -154,6 +166,7 @@ struct							c64instruction
 	int							type;
 	int							mode;
 	int							opcode;
+	struct c64operand			*operands[2];
 };
 
 struct							instruction_list
@@ -162,10 +175,45 @@ struct							instruction_list
 	struct c64instruction_list	*next;
 };
 
-int	c64syntax_getOpcode(int type); // in table
-int	c64syntax_getMode(int type);   // in table
+int								c64syntax_getOpcode(int type);
+int								c64syntax_getMode(int type);
+
+// returns 1 if one of the arguments is positive
+int								c64syntax_oneOf(int n, ...);
+// returns 1 if v is positive
+int								c64syntax_require(int v);
+// returns 1 if v is negative or zero
+int								c64syntax_not(int v);
+// returns 1 if none of the arguments is positive
+int								c64syntax_noneOf(int n, ...);
+
+int								c64syntax_isInstruction(struct c64tokenlist *list);
+int								c64syntax_isRegister(struct c64tokenlist *list);
+int								c64syntax_isImmediate(struct c64tokenlist *list);
+int								c64syntax_isLabel(struct c64tokenlist *list);
+int								c64syntax_isComma(struct c64tokenlist *list);
+int								c64syntax_isColon(struct c64tokenlist *list);
+int								c64syntax_isLBrace(struct c64tokenlist *list);
+int								c64syntax_isRBrace(struct c64tokenlist *list);
+int								c64syntax_isVar(struct c64tokenlist *list);
+
+// returns the next token
+struct c64tokenlist				*c64syntax_nextToken(struct c64tokenlist *list);
+
+struct c64instruction			*c64syntax_parseMode(struct c64tokenlist *list,
+									int mode);
+
+struct c64instruction			*c64syntax_matchSING_REG(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchSING_IMM(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchREG_IMM(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchREG_REG(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchIMM_SYM(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchSING_IMM_SYM(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchNONE(struct c64tokenlist *list);
 
 void							c64syntax_addSymbol(struct c64symbol *anchor,
 									char *name, int value);
+
+struct c64instruction			*c64syntax_getNextInstruction(struct c64tokenlist *list);
 
 #endif // _c64syntax_h_
