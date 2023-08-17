@@ -115,77 +115,85 @@ int	c64syntax_isVar(struct c64tokenlist *list)
 	return (list->token->type == T_VAR);
 }
 
-struct c64tokenlist				*c64syntax_matchInstruction(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchInstruction(struct c64tokenlist *list)
 {
 	if (!c64syntax_isInstruction(list))
-		c64utils_fatals("c64syntax_matchInstruction: expected instruction got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchInstruction: expected instruction got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchRegister(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchRegister(struct c64tokenlist *list)
 {
 	if (!c64syntax_isRegister(list))
-		c64utils_fatals("c64syntax_matchRegister: expected register got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchRegister: expected register got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchImmediate(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchImmediate(struct c64tokenlist *list)
 {
 	if (!c64syntax_isImmediate(list))
-		c64utils_fatals("c64syntax_matchImmediate: expected immediate got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchImmediate: expected immediate got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchLabel(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchLabel(struct c64tokenlist *list)
 {
 	if (!c64syntax_isLabel(list))
-		c64utils_fatals("c64syntax_matchLabel: expected label got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchLabel: expected label got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchLabelRef(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchLabelRef(struct c64tokenlist *list)
 {
 	if (!c64syntax_isLabelRef(list))
-		c64utils_fatals("c64syntax_matchLabelRef: expected label reference got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchLabelRef: expected label reference got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchComma(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchComma(struct c64tokenlist *list)
 {
 	if (!c64syntax_isComma(list))
-		c64utils_fatals("c64syntax_matchComma: expected comma got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchComma: expected comma got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchColon(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchColon(struct c64tokenlist *list)
 {
 	if (!c64syntax_isColon(list))
-		c64utils_fatals("c64syntax_matchColon: expected colon got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchColon: expected colon got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchLBrace(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchLBrace(struct c64tokenlist *list)
 {
 	if (!c64syntax_isLBrace(list))
-		c64utils_fatals("c64syntax_matchLBrace: expected left brace got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchLBrace: expected left brace got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchRBrace(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchRBrace(struct c64tokenlist *list)
 {
 	if (!c64syntax_isRBrace(list))
-		c64utils_fatals("c64syntax_matchRBrace: expected right brace got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchRBrace: expected right brace got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
 
-struct c64tokenlist				*c64syntax_matchVar(struct c64tokenlist *list)
+struct c64tokenlist	*c64syntax_matchVar(struct c64tokenlist *list)
 {
 	if (!c64syntax_isVar(list))
-		c64utils_fatals("c64syntax_matchVar: expected var got", c64token_typestr(list->token->type));
+		c64utils_fatals("c64syntax_matchVar: expected var got",
+			c64token_typestr(list->token->type));
 	return (c64syntax_nextToken(list));
 }
-
-
 
 struct c64tokenlist	*c64syntax_nextToken(struct c64tokenlist *list)
 {
@@ -222,8 +230,7 @@ struct c64instruction	*c64syntax_matchSING_REG(struct c64tokenlist *list)
 {
 	struct c64instruction	*instruction;
 
-	if (!c64syntax_isRegister(list))
-		return (NULL);
+	c64syntax_matchRegister(list);
 	instruction = malloc(sizeof(struct c64instruction));
 	instruction->type = list->token->type;
 	instruction->mode = M_SING_REG;
@@ -238,8 +245,7 @@ struct c64instruction	*c64syntax_matchSING_IMM(struct c64tokenlist *list)
 {
 	struct c64instruction	*instruction;
 
-	if (!c64syntax_isImmediate(list))
-		return (NULL);
+	c64syntax_matchImmediate(list);
 	instruction = malloc(sizeof(struct c64instruction));
 	instruction->type = list->token->type;
 	instruction->mode = M_SING_IMM;
