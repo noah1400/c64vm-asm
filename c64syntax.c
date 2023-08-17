@@ -85,6 +85,11 @@ int	c64syntax_isLabel(struct c64tokenlist *list)
 	return (list->token->type == T_LABEL);
 }
 
+int	c64syntax_isLabelRef(struct c64tokenlist *list)
+{
+	return (list->token->type == T_IDENT);
+}
+
 int	c64syntax_isComma(struct c64tokenlist *list)
 {
 	return (list->token->type == T_COMMA);
@@ -110,8 +115,83 @@ int	c64syntax_isVar(struct c64tokenlist *list)
 	return (list->token->type == T_VAR);
 }
 
+struct c64tokenlist				*c64syntax_matchInstruction(struct c64tokenlist *list)
+{
+	if (!c64syntax_isInstruction(list))
+		c64utils_fatals("c64syntax_matchInstruction: expected instruction got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchRegister(struct c64tokenlist *list)
+{
+	if (!c64syntax_isRegister(list))
+		c64utils_fatals("c64syntax_matchRegister: expected register got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchImmediate(struct c64tokenlist *list)
+{
+	if (!c64syntax_isImmediate(list))
+		c64utils_fatals("c64syntax_matchImmediate: expected immediate got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchLabel(struct c64tokenlist *list)
+{
+	if (!c64syntax_isLabel(list))
+		c64utils_fatals("c64syntax_matchLabel: expected label got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchLabelRef(struct c64tokenlist *list)
+{
+	if (!c64syntax_isLabelRef(list))
+		c64utils_fatals("c64syntax_matchLabelRef: expected label reference got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchComma(struct c64tokenlist *list)
+{
+	if (!c64syntax_isComma(list))
+		c64utils_fatals("c64syntax_matchComma: expected comma got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchColon(struct c64tokenlist *list)
+{
+	if (!c64syntax_isColon(list))
+		c64utils_fatals("c64syntax_matchColon: expected colon got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchLBrace(struct c64tokenlist *list)
+{
+	if (!c64syntax_isLBrace(list))
+		c64utils_fatals("c64syntax_matchLBrace: expected left brace got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchRBrace(struct c64tokenlist *list)
+{
+	if (!c64syntax_isRBrace(list))
+		c64utils_fatals("c64syntax_matchRBrace: expected right brace got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+struct c64tokenlist				*c64syntax_matchVar(struct c64tokenlist *list)
+{
+	if (!c64syntax_isVar(list))
+		c64utils_fatals("c64syntax_matchVar: expected var got", c64token_typestr(list->token->type));
+	return (c64syntax_nextToken(list));
+}
+
+
+
 struct c64tokenlist	*c64syntax_nextToken(struct c64tokenlist *list)
 {
+	Token = *list->next->token;
+	Line = list->next->token->line;
+	Pos = list->next->token->pos;
 	return (list->next);
 }
 
@@ -124,7 +204,7 @@ struct c64instruction	*c64syntax_parseMode(struct c64tokenlist *list,
 		return (c64syntax_matchNONE(list));
 	if (mode & M_SING_REG)
 		return (c64syntax_matchSING_REG(list));
-	if (mode & M_SING_IMM && mode & M_IMM_SYM)
+	if (mode & M_SING_IMM && mode & M_SYM)
 		return (c64syntax_matchSING_IMM_SYM(list));
 	if (mode & M_SING_IMM)
 		return (c64syntax_matchSING_IMM(list));
@@ -132,9 +212,9 @@ struct c64instruction	*c64syntax_parseMode(struct c64tokenlist *list,
 		return (c64syntax_matchREG_IMM(list));
 	if (mode & M_REG_REG)
 		return (c64syntax_matchREG_REG(list));
-	if (mode & M_IMM_SYM)
-		return (c64syntax_matchIMM_SYM(list));
-	fatal("c64syntax_parseMode: invalid mode");
+	if (mode & M_SYM)
+		return (c64syntax_matchSYM(list));
+	fatal("c64syntax_parseMode: invalid addressing mode %d", mode);
 	return (NULL);
 }
 
@@ -231,6 +311,40 @@ struct c64instruction	*c64syntax_matchNONE(struct c64tokenlist *list)
 	return (instruction);
 }
 
+struct c64instruction	*c64syntax_matchSYM(struct c64tokenlist *list)
+{
+	struct c64instruction	*instruction;
+
+	if (!c64syntax_isLabelRef(list))
+		return (NULL);
+	instruction = malloc(sizeof(struct c64instruction));
+	instruction->type = list->token->type;
+	instruction->mode = M_SYM;
+	instruction->opcode = c64syntax_getOpcode(list->token->type);
+	instruction->operands[0] = malloc(sizeof(struct c64operand));
+	instruction->operands[0]->type = T_LABEL;
+	instruction->operands[0]->value = list->token->val;
+	return (instruction);
+}
+
+struct c64instruction	*c64syntax_matchSING_IMM_SYM(struct c64tokenlist *list)
+{
+	struct c64instruction	*instruction;
+	int						isImmediate;
+
+	if (!c64syntax_isImmediate(list) && !c64syntax_isLabelRef(list))
+		return (NULL);
+	isImmediate = c64syntax_isImmediate(list);
+	instruction = malloc(sizeof(struct c64instruction));
+	instruction->type = list->token->type;
+	instruction->mode = isImmediate ? M_SING_IMM : M_SYM;
+	instruction->opcode = c64syntax_getOpcode(list->token->type);
+	instruction->operands[0] = malloc(sizeof(struct c64operand));
+	instruction->operands[0]->type = isImmediate ? T_IMM : T_LABEL;
+	instruction->operands[0]->value = list->token->val;
+	return (instruction);
+}
+
 int	c64syntax_getMode(int type)
 {
 	switch (type)
@@ -284,7 +398,7 @@ int	c64syntax_getMode(int type)
 	case I_BLT:
 	case I_BLE:
 	case I_CALL:
-		return (M_SING_IMM | M_IMM_SYM);
+		return (M_SING_IMM | M_SYM);
 	case I_LDI:
 	case I_LDBI:
 	case I_LDWI:

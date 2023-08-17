@@ -128,7 +128,7 @@ enum
 	M_SING_IMM, // single immediate
 	M_REG_IMM,  // register and immediate
 	M_REG_REG,  // register and register
-	M_IMM_SYM,  // immediate and symbol
+	M_SYM,      // Symbol
 	M_NONE,     // no operands
 };
 
@@ -191,11 +191,23 @@ int								c64syntax_isInstruction(struct c64tokenlist *list);
 int								c64syntax_isRegister(struct c64tokenlist *list);
 int								c64syntax_isImmediate(struct c64tokenlist *list);
 int								c64syntax_isLabel(struct c64tokenlist *list);
+int								c64syntax_isLabelRef(struct c64tokenlist *list);
 int								c64syntax_isComma(struct c64tokenlist *list);
 int								c64syntax_isColon(struct c64tokenlist *list);
 int								c64syntax_isLBrace(struct c64tokenlist *list);
 int								c64syntax_isRBrace(struct c64tokenlist *list);
 int								c64syntax_isVar(struct c64tokenlist *list);
+
+struct c64tokenlist				*c64syntax_matchInstruction(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchRegister(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchImmediate(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchLabel(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchLabelRef(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchComma(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchColon(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchLBrace(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchRBrace(struct c64tokenlist *list);
+struct c64tokenlist				*c64syntax_matchVar(struct c64tokenlist *list);
 
 // returns the next token
 struct c64tokenlist				*c64syntax_nextToken(struct c64tokenlist *list);
@@ -207,7 +219,7 @@ struct c64instruction			*c64syntax_matchSING_REG(struct c64tokenlist *list);
 struct c64instruction			*c64syntax_matchSING_IMM(struct c64tokenlist *list);
 struct c64instruction			*c64syntax_matchREG_IMM(struct c64tokenlist *list);
 struct c64instruction			*c64syntax_matchREG_REG(struct c64tokenlist *list);
-struct c64instruction			*c64syntax_matchIMM_SYM(struct c64tokenlist *list);
+struct c64instruction			*c64syntax_matchSYM(struct c64tokenlist *list);
 struct c64instruction			*c64syntax_matchSING_IMM_SYM(struct c64tokenlist *list);
 struct c64instruction			*c64syntax_matchNONE(struct c64tokenlist *list);
 
