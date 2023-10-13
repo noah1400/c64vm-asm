@@ -52,3 +52,7 @@ Mkfile.old
 dkms.conf
 
 .vscode/**
+
+# c64asm files
+*.c64bin
+*.c64asm

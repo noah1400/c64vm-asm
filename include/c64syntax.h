@@ -143,7 +143,7 @@ enum
 
 struct c64syntax
 {
-	int v; // matched or not
+	int type; // token type
 	char expected[100];
 	char got[100];
 };
@@ -161,6 +161,13 @@ struct c64operand
 	int value;
 };
 
+struct c64parser
+{
+	struct c64syntax *syntax;
+	struct c64parser *and;
+	struct c64parser *or;
+};
+
 struct c64instruction
 {
 	int type;
@@ -169,23 +176,24 @@ struct c64instruction
 	struct c64operand *operands[2];
 };
 
-struct instruction_list
+struct c64instruction_list
 {
 	struct c64instruction *instruction;
 	struct c64instruction_list *next;
 };
 
+struct c64syntax *c64syntax_new(int type, char *expected, char *got);
+void c64syntax_free(struct c64syntax *syntax);
+
+struct c64parser *c64syntax_newParser(int type, ...);
+struct c64parser *c64syntax_parserAnd(struct c64parser *a, struct c64parser *b);
+struct c64parser *c64syntax_parserOr(struct c64parser *a, struct c64parser *b);
+
+
+
+
 int c64syntax_getOpcode(int type);
 int c64syntax_getMode(int type);
-
-// returns 1 if one of the arguments is positive
-int c64syntax_oneOf(int n, ...);
-// returns 1 if v is positive
-int c64syntax_require(int v);
-// returns 1 if v is negative or zero
-int c64syntax_not(int v);
-// returns 1 if none of the arguments is positive
-int c64syntax_noneOf(int n, ...);
 
 int c64syntax_isInstruction(struct c64tokenlist *list);
 int c64syntax_isRegister(struct c64tokenlist *list);
@@ -211,17 +219,6 @@ struct c64tokenlist *c64syntax_matchVar(struct c64tokenlist *list);
 
 // returns the next token
 struct c64tokenlist *c64syntax_nextToken(struct c64tokenlist *list);
-
-struct c64instruction *c64syntax_parseMode(struct c64tokenlist *list,
-										   int mode);
-
-struct c64instruction *c64syntax_matchSING_REG(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchSING_IMM(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchREG_IMM(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchREG_REG(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchSYM(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchSING_IMM_SYM(struct c64tokenlist *list);
-struct c64instruction *c64syntax_matchNONE(struct c64tokenlist *list);
 
 void c64syntax_addSymbol(struct c64symbol *anchor,
 						 char *name, int value);

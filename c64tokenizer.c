@@ -27,6 +27,7 @@ struct c64tokenlist *c64tokenize(void)
 	}
 	first->token = NULL;
 	first->next = NULL;
+	first->prev = NULL;
 	current = first;
 	c64token_scan(&Token);
 	while (Token.type != T_EOF)
@@ -63,6 +64,7 @@ struct c64tokenlist *c64tokenlist_add(struct c64tokenlist *list,
 	}
 	new->token = copy;
 	new->next = NULL;
+	new->prev = list;
 	list->next = new;
 	return (new);
 }

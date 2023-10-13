@@ -22,6 +22,7 @@ along with c64asm. If not, see <https://mit-license.org/>.
 struct c64tokenlist
 {
 	struct c64tokenlist *next;
+	struct c64tokenlist *prev;
 	struct c64token *token;
 };
 
