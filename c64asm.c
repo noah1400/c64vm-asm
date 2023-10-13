@@ -16,18 +16,18 @@ along with c64asm. If not, see <https://mit-license.org/>.
 #include <c64asm.h>
 #include <c64token.h>
 
-struct c64token	Token;
-char			*Registers[REGISTER_COUNT];
-char			Text[TEXT_LEN + 1];
-char			Putback;
-int				Line;
-int				Pos;
-FILE			*Infile;
-FILE			*Outfile;
+struct c64token Token;
+char *Registers[REGISTER_COUNT];
+char Text[TEXT_LEN + 1];
+char Putback;
+int Line;
+int Pos;
+FILE *Infile;
+FILE *Outfile;
 
-void	c64asm_init(void)
+void c64asm_init(void)
 {
-	struct c64token	t;
+	struct c64token t;
 
 	t = (struct c64token){0};
 	Token = t;
@@ -53,7 +53,7 @@ void	c64asm_init(void)
 	Outfile = NULL;
 }
 
-int	main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	c64asm_init();
 	if (argc < 2)

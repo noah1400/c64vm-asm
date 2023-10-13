@@ -197,7 +197,7 @@ struct c64tokenlist	*c64syntax_matchVar(struct c64tokenlist *list)
 
 struct c64tokenlist	*c64syntax_nextToken(struct c64tokenlist *list)
 {
-	Token = *list->next->token;
+	Token = *(list->next->token);
 	Line = list->next->token->line;
 	Pos = list->next->token->pos;
 	return (list->next);

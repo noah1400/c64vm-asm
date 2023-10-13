@@ -15,10 +15,10 @@ along with c64asm. If not, see <https://mit-license.org/>.
 */
 #include <c64tokenizer.h>
 
-struct c64tokenlist	*c64tokenize(void)
+struct c64tokenlist *c64tokenize(void)
 {
-	struct c64tokenlist	*first;
-	struct c64tokenlist	*current;
+	struct c64tokenlist *first;
+	struct c64tokenlist *current;
 
 	first = malloc(sizeof(struct c64tokenlist));
 	if (first == NULL)
@@ -49,11 +49,11 @@ struct c64tokenlist	*c64tokenize(void)
 	return (first);
 }
 
-struct c64tokenlist	*c64tokenlist_add(struct c64tokenlist *list,
-		struct c64token *token)
+struct c64tokenlist *c64tokenlist_add(struct c64tokenlist *list,
+									  struct c64token *token)
 {
-	struct c64token		*copy;
-	struct c64tokenlist	*new;
+	struct c64token *copy;
+	struct c64tokenlist *new;
 
 	copy = c64token_copy(token);
 	new = malloc(sizeof(struct c64tokenlist));
@@ -67,10 +67,10 @@ struct c64tokenlist	*c64tokenlist_add(struct c64tokenlist *list,
 	return (new);
 }
 
-void	c64tokenlist_free(struct c64tokenlist *list)
+void c64tokenlist_free(struct c64tokenlist *list)
 {
-	struct c64tokenlist	*current;
-	struct c64tokenlist	*next;
+	struct c64tokenlist *current;
+	struct c64tokenlist *next;
 
 	current = list;
 	next = NULL;
@@ -83,7 +83,7 @@ void	c64tokenlist_free(struct c64tokenlist *list)
 	}
 }
 
-void	c64tokenlist_print(struct c64tokenlist *list)
+void c64tokenlist_print(struct c64tokenlist *list)
 {
 	struct c64tokenlist *current = list;
 
