@@ -13,30 +13,33 @@
 %token <num> NUMBER 
 %token <num> HEX
 %token <num> REGISTER
-%token <num> LDI 1
+%token <num> LDI 
 %token <num> ST
 %token <num> PUSH
 %token <num> POP
 %token <num> EOL
+%token <num> JMP
 %token <str> COMMENT
 
-%token <str> LABEL
+%token <str> LABEL_DEF
+%token <str> LABEL_REF
 
 %type <num> immediate
 %type <str> opt_comment
 
 %%
 
-c64asm: /* empty */
+c64asm: 
     | c64asm line opt_comment EOL
+    | c64asm error EOL { printf("Error on line %d\n", line_no); }
     ;
 
-line: /* empty */
+line: 
     | instruction
-    | LABEL { printf(":%s\n", $1);}
+    | LABEL_DEF { printf(":%s\n", $1);}
     ;
 
-opt_comment: /* empty */ { $$ = ""; } 
+opt_comment:  { $$ = ""; } 
     | COMMENT { $$ = $1; }
     ;
 
@@ -44,6 +47,7 @@ instruction: LDI REGISTER ',' immediate { printf("0x%04lx r%d, %d\n", OP_LDI, $2
     | ST REGISTER ',' immediate { printf("0x%04lx r%d, %d\n", OP_ST, $2, $4); }
     | PUSH REGISTER { printf("PUSH r%d\n", $2); }
     | POP REGISTER { printf("POP r%d\n", $2); }
+    | JMP LABEL_REF { printf("JMP %s\n", $2); }
     ;
 
 immediate: NUMBER { $$ = $1; }
@@ -51,35 +55,3 @@ immediate: NUMBER { $$ = $1; }
     ;
 
 %%
-#include "lex.yy.c"
-
-int main(int argc, char **argv) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <file>\n", argv[0]);
-        return 1;
-    }
-
-    yyin = fopen(argv[1], "r");
-    if (!yyin) {
-        perror(argv[1]);
-        return 1;
-    }
-
-    int parse_result = yyparse();
-    fclose(yyin);
-    
-    if (parse_result) {
-        fprintf(stderr, "Parse failed\n");
-        return 1;
-    }
-
-    return 0;
-}
-
-void yyerror(char *s) {
-    if (strcmp(s, "syntax error") == 0) {
-        fprintf(stderr, "Fehler in Zeile %d: Unerwartetes Symbol '%s'\n", line_no, yytext);
-    } else {
-        fprintf(stderr, "Fehler in Zeile %d: %s\n", line_no, s);
-    }
-}
