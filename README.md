@@ -25,7 +25,7 @@ To compile the **c64vm-asm** project, follow these steps:
 3. Run the following command to compile the project:
 
     ```sh
-    gcc -o c64asm c64asm.c c64token.c c64tokenizer.c c64utils.c -Iinclude -std=c99 -Wall -Wextra -Wpedantic
+    make
     ```
 
 ## Usage
@@ -33,7 +33,7 @@ To compile the **c64vm-asm** project, follow these steps:
 While the project is still under active development, the current usage involves running the compiled `c64asm` executable, providing it with input and output filenames as arguments:
 
 ```sh
-./c64asm.exe input.c64asm output.c64bin
+./c64asm input.c64asm
 ```
 
 ## Note
