@@ -56,3 +56,5 @@ dkms.conf
 # c64asm files
 *.c64bin
 *.c64asm
+
+bin/
