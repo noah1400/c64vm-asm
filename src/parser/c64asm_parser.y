@@ -3,6 +3,8 @@
     #include <stdlib.h>
     #include <c64asm_opcodes.h>
     extern int line_no;
+
+    void add_label(char *label);
 %}
 
 %union {
@@ -36,7 +38,10 @@ c64asm:
 
 line: 
     | instruction
-    | LABEL_DEF { printf(":%s\n", $1);}
+    | LABEL_DEF { 
+        printf("%s:\n", $1);
+        add_label($1);
+        }
     ;
 
 opt_comment:  { $$ = ""; } 
@@ -47,7 +52,7 @@ instruction: LDI REGISTER ',' immediate { printf("0x%04lx r%d, %d\n", OP_LDI, $2
     | ST REGISTER ',' immediate { printf("0x%04lx r%d, %d\n", OP_ST, $2, $4); }
     | PUSH REGISTER { printf("PUSH r%d\n", $2); }
     | POP REGISTER { printf("POP r%d\n", $2); }
-    | JMP LABEL_REF { printf("JMP %s\n", $2); }
+    | JMP LABEL_REF { printf("JMP %s\n", $2);}
     ;
 
 immediate: NUMBER { $$ = $1; }
@@ -55,3 +60,14 @@ immediate: NUMBER { $$ = $1; }
     ;
 
 %%
+
+#include <c64asm_symbols.h>
+
+void add_label(char *label) {
+    printf("Label: %s\n", label);
+    if (symbol_table_find(symbol_table, label) != NULL) {
+        printf("Error: Label %s already defined\n", label);
+        exit(1);
+    }
+    symbol_table_add(symbol_table, SYMBOL_TYPE_LABEL, label, 0);
+}

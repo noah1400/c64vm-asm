@@ -2,7 +2,11 @@
 #define c64asm_symbols_h
 
 #include <stdlib.h>
-#include <cstdint>
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+
+#define SYMBOL_TABLE_SIZE 64
 
 typedef enum {
     SYMBOL_TYPE_LABEL,
@@ -10,22 +14,26 @@ typedef enum {
     SYMBOL_TYPE_VARIABLE
 } SymbolType;
 
-typedef struct {
+typedef struct Symbol {
     SymbolType type;
-    const char *name;
+    char *name;
     uint64_t address;
+    struct Symbol *next;
 } Symbol;
 
 typedef struct {
-    Symbol **symbols;
-    int count;
-    int capacity;
+    Symbol *table[SYMBOL_TABLE_SIZE];
 } SymbolTable;
 
-SymbolTable *symbol_table_create();
-void symbol_table_destroy(SymbolTable *table);
-Symbol *symbol_table_add(SymbolTable *table, SymbolType type, const char *name, uint64_t address);
-Symbol *symbol_table_find(SymbolTable *table, const char *name);
 
+extern SymbolTable *symbol_table;
+
+void symbol_table_init();
+void symbol_table_add(SymbolTable *table, SymbolType type, const char *name, uint64_t address);
+Symbol *symbol_table_find(SymbolTable *table, const char *name);
+void symbol_table_free(SymbolTable *table);
+unsigned int hash(const char *str);
+
+void symbol_table_print(SymbolTable *table);
 
 #endif // c64asm_symbols_h

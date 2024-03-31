@@ -1,4 +1,5 @@
 #include "lex.yy.c"
+#include <c64asm_symbols.h>
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -16,6 +17,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    symbol_table_init();
+
     int parse_result = yyparse();
     fclose(yyin);
     
@@ -23,6 +26,9 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Parse failed\n");
         return 1;
     }
+
+    symbol_table_print(symbol_table);
+    symbol_table_free(symbol_table);
 
     return 0;
 }
