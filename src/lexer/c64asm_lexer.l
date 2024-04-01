@@ -1,5 +1,7 @@
 %{
 #include "y.tab.h"
+#include <stdlib.h>
+#include <stdint.h>
 int line_no = 1;
 %}
 
@@ -32,9 +34,9 @@ LABEL_DEF ":"[a-zA-Z_][a-zA-Z0-9_]*
 {JMP} { return JMP; }
 
 
-{NUMBER} { yylval.num = atoi(yytext+1); return NUMBER; }
-{HEX} { yylval.num = strtol(yytext+1, NULL, 16); return NUMBER; }
-{REGISTER} { yylval.num = atoi(yytext+1); return REGISTER; }
+{NUMBER} { yylval.imm = strtoull(yytext+1, NULL, 10); return NUMBER; }
+{HEX} { yylval.imm = strtoull(yytext+1, NULL, 16); return NUMBER; }
+{REGISTER} { yylval.byte = (uint8_t)strtoul(yytext+1, NULL, 10); return REGISTER; }
 {COMMENT} { yylval.str = strdup(yytext); return COMMENT;}
 
 {LABEL_DEF} { yylval.str = strdup(yytext+1); return LABEL_DEF; }

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef enum {
+typedef enum NodeType {
     NODE_LABEL_DEF,
     NODE_LABEL_REF,
     NODE_INSTRUCTION,
@@ -26,7 +26,6 @@ typedef struct ASTNode {
         } instruction;
         uint64_t immediate;
         uint8_t reg;
-        char *comment; // added for optional use later
     } data;
     struct ASTNode *next;
 } ASTNode;
@@ -41,6 +40,7 @@ ASTNode *ast_create_immediate_node(uint64_t immediate);
 ASTNode *ast_create_register_node(uint8_t reg);
 ASTNode *ast_create_comment_node(char *comment); // added for optional use later
 void ast_append_node(ASTNode **head, ASTNode *node);
+void ast_print(ASTNode *head);
 void ast_free(ASTNode *head);
 
 
