@@ -6,8 +6,6 @@ ASTNode *ast_create_node(NodeType type)
 {
     ASTNode *node = malloc(sizeof(ASTNode));
 
-    printf("Create Node %d\n", type);
-
     if (!node) {
         fprintf(stderr, "Failed to allocate memory for AST node\n");
         exit(1);

@@ -1,6 +1,7 @@
 #include "lex.yy.c"
 #include <c64asm_symbols.h>
 #include <c64asm_ast.h>
+#include <c64asm_gen.h>
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -29,8 +30,9 @@ int main(int argc, char **argv) {
     }
 
     symbol_table_print(symbol_table);
-    symbol_table_free(symbol_table);
     ast_print(ast_head);
+    c64gen_gen(ast_head, "out.bin");
+    symbol_table_free(symbol_table);
     ast_free(ast_head);
 
     return 0;

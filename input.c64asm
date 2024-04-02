@@ -9,7 +9,7 @@ LDI R1, $30     ; '0'
 ST R1, #0f0f    ; at string pointer
 LDI R1, $78     ; 'x'
 
-JMP testLabel
+JMP testLabel2
 
 ; comment
 
