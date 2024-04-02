@@ -16,7 +16,7 @@ JMP "JMP"
 
 NUMBER  \$[0-9]+
 HEX     #[0-9a-fA-F]+
-REGISTER [rR][0-9]+
+REGISTER [rR][0-8]
 COMMENT ";"[^\n]*
 EOL \n
 

@@ -68,7 +68,7 @@ void c64gen_write_instruction(ASTNode *instruction, FILE *f, uint64_t *ip)
 
 void c64gen_write_register(ASTNode *reg,FILE *f, uint64_t *ip)
 {
-    uint8_t reg_num = reg->data.reg;
+    uint8_t reg_num = reg->data.reg+2;
     c64gen_write8(f, reg_num, ip);
 }
 
@@ -138,6 +138,11 @@ void c64gen_gen(ASTNode *ast, const char *filename)
         // Move to the next node in the AST
         current = current->next;
     }
+
+    printf("Writing HLT\n");
+    //Write HLT ( 0xffff )
+    c64gen_write8(f, 0xff, &ip);
+    c64gen_write8(f, 0xff, &ip);
 
     // Close the output file
     fclose(f);

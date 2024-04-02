@@ -54,7 +54,7 @@ dkms.conf
 .vscode/**
 
 # c64asm files
-*.c64bin
+*.bin
 *.c64asm
 
 bin/

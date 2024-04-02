@@ -5,11 +5,11 @@
 PUSH R1
 PUSH R2
 
-LDI R1, $30     ; '0'
-ST R1, #0f0f    ; at string pointer
-LDI R1, $78     ; 'x'
+LDI R1, $3030     ; '0'
+ST R1, #fffff    ; at string pointer
+LDI R1, $255     ; 'x'
 
-JMP testLabel2
+JMP testLabel
 
 ; comment
 
