@@ -11,8 +11,8 @@
     ASTNode *add_label_ref_node(char *label);
     ASTNode *add_instruction_node(char *mnemonic, uint16_t opcode, ASTNode* operand1, ASTNode *operand2);
     ASTNode *add_comment_node(char *comment);
-    ASTNode *add_immediate_node(uint64_t immediate);
-    ASTNode *add_register_node(uint8_t reg);
+    ASTNode *create_immediate_node(uint64_t immediate);
+    ASTNode *create_register_node(uint8_t reg);
 %}
 
 %union {
@@ -61,19 +61,19 @@ opt_comment:  { $$ = ""; }
 
 instruction: LDI REGISTER ',' immediate { 
             printf("0x%04lx r%d, %d\n", OP_LDI, $2, $4); 
-            add_instruction_node("LDI", OP_LDI, add_register_node($2), add_immediate_node($4));
+            add_instruction_node("LDI", OP_LDI, create_register_node($2), create_immediate_node($4));
         }
     | ST REGISTER ',' immediate { 
             printf("0x%04lx r%d, %d\n", OP_ST, $2, $4); 
-            add_instruction_node("ST", OP_ST, add_register_node($2), add_immediate_node($4));
+            add_instruction_node("ST", OP_ST, create_register_node($2), create_immediate_node($4));
         }
     | PUSH REGISTER { 
             printf("PUSH r%d\n", $2); 
-            add_instruction_node("PUSH", OP_PUSH, add_register_node($2), NULL);
+            add_instruction_node("PUSH", OP_PUSH, create_register_node($2), NULL);
         }
     | POP REGISTER { 
             printf("POP r%d\n", $2); 
-            add_instruction_node("POP", OP_POP, add_register_node($2), NULL);
+            add_instruction_node("POP", OP_POP, create_register_node($2), NULL);
         }
     | JMP LABEL_REF { 
             printf("JMP %s\n", $2); 
@@ -116,15 +116,13 @@ ASTNode *add_instruction_node(char *mnemonic, uint16_t opcode, ASTNode* operand1
     return node;
 }
 
-ASTNode *add_immediate_node(uint64_t immediate) {
+ASTNode *create_immediate_node(uint64_t immediate) {
     ASTNode *node = ast_create_immediate_node(immediate);
-    ast_append_node(&ast_head, node);
     return node;
 }
 
-ASTNode *add_register_node(uint8_t reg) {
+ASTNode *create_register_node(uint8_t reg) {
     ASTNode *node = ast_create_register_node(reg);
-    ast_append_node(&ast_head, node);
     return node;
 }
 
