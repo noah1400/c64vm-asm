@@ -8,7 +8,7 @@
 
     void add_label(char *label);
     ASTNode *add_label_def_node(char *label);
-    ASTNode *add_label_ref_node(char *label);
+    ASTNode *create_label_ref_node(char *label);
     ASTNode *add_instruction_node(char *mnemonic, uint16_t opcode, ASTNode* operand1, ASTNode *operand2);
     ASTNode *add_comment_node(char *comment);
     ASTNode *create_immediate_node(uint64_t immediate);
@@ -151,7 +151,7 @@ instruction:
             add_instruction_node("POP", OP_POP, create_register_node($2), NULL);
         }
     | JMP LABEL_REF {
-            add_instruction_node("JMP", OP_JMP, add_label_ref_node($2), NULL);
+            add_instruction_node("JMP", OP_JMP, create_label_ref_node($2), NULL);
         }
     | LDBI REGISTER ',' immediate {
             add_instruction_node("LDBI", OP_LDBI, create_register_node($2), create_immediate_node($4));
@@ -283,25 +283,25 @@ instruction:
             add_instruction_node("CMPI", OP_CMPI, create_register_node($2), create_immediate_node($4));
         }
     | JEQ LABEL_REF {
-            add_instruction_node("JEQ", OP_JEQ, add_label_ref_node($2), NULL);
+            add_instruction_node("JEQ", OP_JEQ, create_label_ref_node($2), NULL);
         }
     | JNE LABEL_REF {
-            add_instruction_node("JNE", OP_JNE, add_label_ref_node($2), NULL);
+            add_instruction_node("JNE", OP_JNE, create_label_ref_node($2), NULL);
         }
     | JGT LABEL_REF {
-            add_instruction_node("JGT", OP_JGT, add_label_ref_node($2), NULL);
+            add_instruction_node("JGT", OP_JGT, create_label_ref_node($2), NULL);
         }
     | JLT LABEL_REF {
-            add_instruction_node("JLT", OP_JLT, add_label_ref_node($2), NULL);
+            add_instruction_node("JLT", OP_JLT, create_label_ref_node($2), NULL);
         }
     | JGE LABEL_REF {
-            add_instruction_node("JGE", OP_JGE, add_label_ref_node($2), NULL);
+            add_instruction_node("JGE", OP_JGE, create_label_ref_node($2), NULL);
         }
     | JLE LABEL_REF {
-            add_instruction_node("JLE", OP_JLE, add_label_ref_node($2), NULL);
+            add_instruction_node("JLE", OP_JLE, create_label_ref_node($2), NULL);
         }
     | CALL LABEL_REF {
-            add_instruction_node("CALL", OP_CALL, add_label_ref_node($2), NULL);
+            add_instruction_node("CALL", OP_CALL, create_label_ref_node($2), NULL);
         }
     | RET {
             add_instruction_node("RET", OP_RET, NULL, NULL);
@@ -341,9 +341,8 @@ ASTNode *add_label_def_node(char *label) {
     return node;
 }
 
-ASTNode *add_label_ref_node(char *label) {
+ASTNode *create_label_ref_node(char *label) {
     ASTNode *node = ast_create_label_ref_node(label);
-    ast_append_node(&ast_head, node);
     return node;
 }
 
