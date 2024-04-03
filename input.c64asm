@@ -1,5 +1,5 @@
 ; Load the value to check for primality into R1
-LDI R1, $7     ; Load immediate value 7 into R1
+LDI R1, $7919     ; Load immediate value 7 into R1
 
 ; Assume the number is prime initially, set R2 to 1
 LDI R2, $1     ; Set R2 to 1 (assume R1 is prime)
@@ -36,4 +36,4 @@ LDI R2, $0
 
 :end
 ; Program ends here, result (prime or not) is in R2
-HLT           
+HLT
