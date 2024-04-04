@@ -3,7 +3,10 @@
 #include <c64asm_ast.h>
 #include <c64asm_gen.h>
 
+SymbolTable *current_table = NULL;
+
 int main(int argc, char **argv) {
+
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <file>\n", argv[0]);
         return 1;
@@ -19,7 +22,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    symbol_table_init();
+    SymbolTable *symbol_table = symbol_table_init(argv[1]);
+    current_table = symbol_table;
 
     int parse_result = yyparse();
     fclose(yyin);
@@ -31,7 +35,7 @@ int main(int argc, char **argv) {
 
     symbol_table_print(symbol_table);
     ast_print(ast_head);
-    c64gen_gen(ast_head, "out.bin");
+    c64gen_gen(ast_head, "out.bin", symbol_table);
     symbol_table_free(symbol_table);
     ast_free(ast_head);
 

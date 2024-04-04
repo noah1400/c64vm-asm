@@ -24,6 +24,9 @@
     uint8_t byte;
 }
 
+%token REF
+%token DEF
+
 %token <imm> NUMBER 
 %token <imm> HEX
 %token <byte> REGISTER
@@ -125,6 +128,8 @@ c64asm:
     ;
 
 line: 
+    | DEF LABEL_REF { printf("exported label: %s\n", $2); }
+    | REF LABEL_REF { printf("referenced label: %s\n", $2); }
     | instruction
     | LABEL_DEF { 
         printf("%s:\n", $1);
@@ -328,11 +333,33 @@ immediate: NUMBER { $$ = $1; }
 
 void add_label(char *label) {
     printf("Label: %s\n", label);
-    if (symbol_table_find(symbol_table, label) != NULL) {
-        printf("Error: Label %s already defined\n", label);
-        exit(1);
+    if (symbol_table_find_any_type(current_table, label) != NULL 
+        || symbol_table_find_ref_directive(current_table, label) != NULL ){
+        fprintf(stderr, "Warning: Label %s already defined\n", label);
+        yyerror("Label already defined");
     }
-    symbol_table_add(symbol_table, SYMBOL_TYPE_LABEL, label, 0);
+    symbol_table_add(current_table, SYMBOL_TYPE_LABEL, label, ADDR_UNDEFINED);
+}
+
+void add_def_directive(char *label) {
+    printf("Def: %s\n", label);
+    if (symbol_table_find_ref_directive(current_table, label) != NULL
+        || symbol_table_find_def_directive(current_table, label) != NULL) {
+        fprintf(stderr, "Warning: Label %s already referenced\n", label);
+        yyerror("Label already referenced");
+        }
+    symbol_table_add_ref_directive(current_table, label);
+}
+
+void add_ref_directive(char *label) {
+    printf("Ref: %s\n", label);
+    if (symbol_table_find_ref_directive(current_table, label) != NULL
+        || symbol_table_find_def_directive(current_table, label) != NULL
+        || symbol_table_find_any_type(current_table, label) != NULL ) {
+        fprintf(stderr, "Warning: Label %s already defined\n", label);
+        yyerror("Label already defined");
+    }
+    symbol_table_add_ref_directive(current_table, label);
 }
 
 ASTNode *add_label_def_node(char *label) {

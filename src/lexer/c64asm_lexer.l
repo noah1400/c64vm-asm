@@ -7,6 +7,9 @@ int line_no = 1;
 
 %option noyywrap
 
+REF     "REF"
+DEF     "DEF"
+
 /* Token definitions for existing opcodes */
 LDI     "LDI"
 ST      "ST"
@@ -113,6 +116,9 @@ LABEL_REF [a-zA-Z_][a-zA-Z0-9_]*
 LABEL_DEF ":"[a-zA-Z_][a-zA-Z0-9_]*
 
 %%
+
+{REF}    { return REF; }
+{DEF}    { return DEF; }
 
 {LDI}    { return LDI; }
 {ST}     { return ST; }

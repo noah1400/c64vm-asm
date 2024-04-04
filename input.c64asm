@@ -1,3 +1,5 @@
+DEF check_loop_start
+REF imported_label
 ; Load the value to check for primality into R1
 LDI R1, $7919     ; Load immediate value 7 into R1
 
