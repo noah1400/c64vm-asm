@@ -30,7 +30,7 @@ typedef struct ASTNode {
     struct ASTNode *next;
 } ASTNode;
 
-extern ASTNode *ast_head;
+extern ASTNode *current_ast;
 
 ASTNode *ast_create_node(NodeType type);
 ASTNode *ast_create_label_def_node(char *label);

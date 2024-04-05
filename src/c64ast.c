@@ -1,7 +1,5 @@
 #include <c64asm_ast.h>
 
-ASTNode *ast_head = NULL;
-
 ASTNode *ast_create_node(NodeType type)
 {
     ASTNode *node = malloc(sizeof(ASTNode));

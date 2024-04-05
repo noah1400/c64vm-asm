@@ -2,8 +2,11 @@
 #include <c64asm_symbols.h>
 #include <c64asm_ast.h>
 #include <c64asm_gen.h>
+#include <c64asm_link.h>
 
 SymbolTable *current_table = NULL;
+ASTNode *current_ast = NULL;
+c64linker_t *global_linker = NULL;
 
 int main(int argc, char **argv) {
 
@@ -22,8 +25,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    SymbolTable *symbol_table = symbol_table_init(argv[1]);
-    current_table = symbol_table;
+    global_linker = c64linker_create();
+
+    c64link_OBJ_t *obj = c64linker_create_object(argv[1]);
+
+    obj->symtab = symbol_table_init(argv[1]);
+    current_table = obj->symtab;
+    current_ast = obj->ast;
 
     int parse_result = yyparse();
     fclose(yyin);
@@ -33,12 +41,15 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    symbol_table_print(symbol_table);
-    ast_print(ast_head);
-    c64gen_gen(ast_head, "out.bin", symbol_table);
-    symbol_table_free(symbol_table);
-    ast_free(ast_head);
+    obj->ast = current_ast;
 
+    c64linker_add_object(global_linker, obj);
+
+    symbol_table_print(current_table);
+    c64linker_link(global_linker);
+    ast_print(current_ast);
+    // c64gen_gen(current_ast, "out.bin", current_table);
+    c64linker_free(global_linker);
     return 0;
 }
 

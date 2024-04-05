@@ -130,6 +130,7 @@ void symbol_table_resolve_def_directives(SymbolTable *table)
         while (symbol) {
             Symbol *resolved = symbol_table_find_any_type(table, symbol->name);
             if (resolved) {
+                printf("Resolved symbol %s to address %lu\n", symbol->name, resolved->address);
                 symbol->address = resolved->address;
                 symbol->type = resolved->type;
             } else {

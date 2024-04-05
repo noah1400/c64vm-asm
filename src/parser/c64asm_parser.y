@@ -13,6 +13,8 @@
     ASTNode *add_comment_node(char *comment);
     ASTNode *create_immediate_node(uint64_t immediate);
     ASTNode *create_register_node(uint8_t reg);
+    void add_def_directive(char *label);
+    void add_ref_directive(char *label);
 %}
 
 
@@ -128,8 +130,14 @@ c64asm:
     ;
 
 line: 
-    | DEF LABEL_REF { printf("exported label: %s\n", $2); }
-    | REF LABEL_REF { printf("referenced label: %s\n", $2); }
+    | DEF LABEL_REF { 
+        printf("defined label: %s\n", $2); 
+        add_def_directive($2);
+        }
+    | REF LABEL_REF { 
+        printf("referenced label: %s\n", $2); 
+        add_ref_directive($2);
+        }
     | instruction
     | LABEL_DEF { 
         printf("%s:\n", $1);
@@ -333,6 +341,7 @@ immediate: NUMBER { $$ = $1; }
 
 void add_label(char *label) {
     printf("Label: %s\n", label);
+
     if (symbol_table_find_any_type(current_table, label) != NULL 
         || symbol_table_find_ref_directive(current_table, label) != NULL ){
         fprintf(stderr, "Warning: Label %s already defined\n", label);
@@ -348,7 +357,7 @@ void add_def_directive(char *label) {
         fprintf(stderr, "Warning: Label %s already referenced\n", label);
         yyerror("Label already referenced");
         }
-    symbol_table_add_ref_directive(current_table, label);
+    symbol_table_add_def_directive(current_table, label);
 }
 
 void add_ref_directive(char *label) {
@@ -364,7 +373,7 @@ void add_ref_directive(char *label) {
 
 ASTNode *add_label_def_node(char *label) {
     ASTNode *node = ast_create_label_def_node(label);
-    ast_append_node(&ast_head, node);
+    ast_append_node(&current_ast, node);
     return node;
 }
 
@@ -375,7 +384,7 @@ ASTNode *create_label_ref_node(char *label) {
 
 ASTNode *add_instruction_node(char *mnemonic, uint16_t opcode, ASTNode* operand1, ASTNode *operand2) {
     ASTNode *node = ast_create_instruction_node(mnemonic, opcode, operand1, operand2);
-    ast_append_node(&ast_head, node);
+    ast_append_node(&current_ast, node);
     return node;
 }
 
