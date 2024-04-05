@@ -8,44 +8,52 @@ SymbolTable *current_table = NULL;
 ASTNode *current_ast = NULL;
 c64linker_t *global_linker = NULL;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: %s <file>\n", argv[0]);
         return 1;
     }
 
-    #if YYDEBUG
-        yydebug = 1;
-    #endif
-
-    yyin = fopen(argv[1], "r");
-    if (!yyin) {
-        perror(argv[1]);
-        return 1;
-    }
+#if YYDEBUG
+    yydebug = 1;
+#endif
 
     global_linker = c64linker_create();
 
-    c64link_OBJ_t *obj = c64linker_create_object(argv[1]);
+    for (int i = 1; i < argc; i++)
+    {
+        printf("Parsing %s\n\n", argv[i]);
+        yyin = fopen(argv[i], "r");
+        if (!yyin)
+        {
+            perror(argv[i]);
+            return 1;
+        }
 
-    obj->symtab = symbol_table_init(argv[1]);
-    current_table = obj->symtab;
-    current_ast = obj->ast;
+        c64link_OBJ_t *obj = c64linker_create_object(argv[i]);
 
-    int parse_result = yyparse();
-    fclose(yyin);
-    
-    if (parse_result) {
-        fprintf(stderr, "Parse failed\n");
-        return 1;
+        obj->symtab = symbol_table_init(argv[i]);
+        current_table = obj->symtab;
+
+        int parse_result = yyparse();
+        fclose(yyin);
+
+        if (parse_result)
+        {
+            fprintf(stderr, "Parse failed\n");
+            return 1;
+        }
+
+        obj->ast = current_ast;
+        current_ast = NULL;
+
+        symbol_table_print(obj->symtab);
+
+        c64linker_add_object(global_linker, obj);
     }
-
-    obj->ast = current_ast;
-
-    c64linker_add_object(global_linker, obj);
-
-    symbol_table_print(current_table);
     c64linker_link(global_linker);
     ast_print(current_ast);
     // c64gen_gen(current_ast, "out.bin", current_table);
@@ -53,10 +61,14 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void yyerror(char *s) {
-    if (strcmp(s, "syntax error") == 0) {
+void yyerror(char *s)
+{
+    if (strcmp(s, "syntax error") == 0)
+    {
         fprintf(stderr, "Fehler in Zeile %d: Unerwartetes Symbol '%s'\n", line_no, yytext);
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Fehler in Zeile %d: %s\n", line_no, s);
     }
 }

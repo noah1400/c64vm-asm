@@ -145,7 +145,7 @@ void ast_free(ASTNode *head) {
         ASTNode *temp = head;
         head = head->next;
         ast_free_node(temp);
-        free(temp);
+        // free(temp);
         temp = NULL;
     }
 }

@@ -1,32 +1,7 @@
 DEF check_loop_start
 REF imported_label
-; Load the value to check for primality into R1
-LDI R1, $7919     ; Load immediate value 7 into R1
-
-; Assume the number is prime initially, set R2 to 1
-LDI R2, $1     ; Set R2 to 1 (assume R1 is prime)
-
-; Initialize R3 to start loop from 2 (since every number is divisible by 1)
-LDI R3, $2
-
-; Transfer R1 to R4 to preserve the value for comparison
-TF R4, R1     ; Transfer the value of R1 to R4
 
 :check_loop_start
-
-; If R3 >= R4, then we have checked all divisors and R4 is prime
-CMP R3, R4
-JGE end        ; If R3 >= R4, it means R4 is prime, and we can end the program
-
-; Prepare R4 for modulo operation: Transfer R1 to R4 again
-TF R4, R1     ; Restore original value into R4 before each modulo operation
-
-; Check if R4 mod R3 == 0 (if R4 is divisible by R3, it's not prime)
-MOD R4, R3     ; Perform R4 %= R3, result is stored in R4
-
-; If the result is zero, R4 was divisible by R3, and thus not prime
-CMPI R4, $0
-JEQ not_prime   ; If zero, R4 is not prime, jump to not_prime
 
 ; Increment R3 and continue the loop
 ADDI R3, $1
@@ -38,4 +13,5 @@ LDI R2, $0
 
 :end
 ; Program ends here, result (prime or not) is in R2
+JMP imported_label
 HLT

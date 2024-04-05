@@ -47,6 +47,8 @@ void symbol_table_resolve_def_directives(SymbolTable *table);
 
 unsigned int hash(const char *str);
 
+Symbol *symbol_copy(Symbol *symbol);
+
 void symbol_table_print(SymbolTable *table);
 
 #endif // c64asm_symbols_h

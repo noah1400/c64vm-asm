@@ -84,7 +84,13 @@ void c64linker_resolve_label_addresses_node(ASTNode *node, SymbolTable *symtab, 
         case NODE_LABEL_REF:
             printf("RESOLVING LABEL REF: %s\n", node->data.label);
             Symbol *ref = symbol_table_find(symtab, node->data.label, SYMBOL_TYPE_LABEL);
-            true_or_fail(ref != NULL, "Label not found");
+            if (!ref)
+            {
+                printf("LABEL NOT FOUND: %s\n", node->data.label);
+                printf("SEARCHING IN REF DIRECTIVES\n", node->data.label);
+                ref = symbol_table_find_ref_directive(symtab, node->data.label);
+                true_or_fail(ref != NULL, "Label not found");
+            }
             *ip += sizeof(uint64_t);
             break;
         case NODE_INSTRUCTION:
@@ -128,7 +134,36 @@ void c64linker_link(c64linker_t *linker)
         obj->start_address = ip;
         c64linker_resolve_label_addresses(obj->ast, obj->symtab, &ip);
         symbol_table_resolve_def_directives(obj->symtab);
+
+        Symbol **defs = obj->symtab->def_directives;
+        Symbol **global_defs = linker->def_directives;
+        for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
+            Symbol *def = defs[i];
+            while (def) {
+                // Add the symbol to the global linker
+                unsigned int index = hash(def->name);
+                // Search for the symbol in the global linker
+                Symbol *global_def = global_defs[index];
+                while (global_def) {
+                    if (strcmp(global_def->name, def->name) == 0) {
+                        printf("Symbol %s redefined in %s\n", def->name, obj->filename);
+                        exit(1);
+                        break;
+                    }
+                    global_def = global_def->next;
+                }
+                
+                // Add the symbol to the global linker
+                global_def = symbol_copy(def);
+                global_def->next = global_defs[index];
+                global_defs[index] = global_def;
+                def = def->next;
+            }
+        }
+
         obj = obj->next;
     }
-    // TODO: Link objects
+    
+    
+
 }

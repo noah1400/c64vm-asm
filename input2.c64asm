@@ -1,0 +1,6 @@
+DEF imported_label
+
+:imported_label
+    ; code that uses imported_label
+    RET
+    

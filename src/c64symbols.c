@@ -16,7 +16,11 @@ unsigned int hash(const char *str)
 SymbolTable *symbol_table_init(char *filename)
 {
     symbol_table = malloc(sizeof(SymbolTable));
-    memset(symbol_table->table, 0, sizeof(symbol_table->table));
+    for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
+        symbol_table->table[i] = NULL;
+        symbol_table->def_directives[i] = NULL;
+        symbol_table->ref_directives[i] = NULL;
+    }
     symbol_table->filename = strdup(filename);
     return symbol_table;
 }
@@ -24,6 +28,7 @@ SymbolTable *symbol_table_init(char *filename)
 void symbol_table_add(SymbolTable *table, SymbolType type, const char *name, uint64_t address)
 {
     Symbol *symbol = malloc(sizeof(Symbol));
+    printf("Adding symbol %s of type %d at address %lu\n", name, type, address);
     symbol->name = strdup(name);
     symbol->type = type;
     symbol->address = address;
@@ -37,10 +42,12 @@ void symbol_table_add(SymbolTable *table, SymbolType type, const char *name, uin
 
 Symbol *symbol_table_find(SymbolTable *table, const char *name, SymbolType type)
 {
+    printf("Searching for label %s of type %d\n", name, type);
     unsigned int index = hash(name);
     Symbol *symbol = table->table[index];
 
     while (symbol) {
+        printf("Comparing %s of type %d with %s\n", symbol->name, symbol->type, name);
         if (strcmp(symbol->name, name) == 0 && symbol->type == type) {
             return symbol;
         }
@@ -185,8 +192,18 @@ void symbol_table_print(SymbolTable *table)
     for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
         Symbol *symbol = table->table[i];
         while (symbol) {
-            printf("%s: %lu\n", symbol->name, symbol->address);
+            printf("%s: %lu (%d)\n", symbol->name, symbol->address, symbol->type);
             symbol = symbol->next;
         }
     }
+}
+
+Symbol *symbol_copy(Symbol *symbol)
+{
+    Symbol *copy = malloc(sizeof(Symbol));
+    copy->name = strdup(symbol->name);
+    copy->type = symbol->type;
+    copy->address = symbol->address;
+    copy->next = NULL;
+    return copy;
 }
