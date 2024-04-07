@@ -124,6 +124,26 @@ void c64linker_resolve_label_addresses(ASTNode *ast, SymbolTable *symtab, uint64
     }
 }
 
+void add_symbol_to_linker_defs(Symbol **global_defs, Symbol **defs, Symbol *def, c64link_OBJ_t *obj)
+{
+    unsigned int index = hash(def->name);
+    // Search for the symbol in the global linker
+    Symbol *global_def = global_defs[index];
+    while (global_def) {
+        if (strcmp(global_def->name, def->name) == 0) {
+            printf("Symbol %s redefined in %s\n", def->name, obj->filename);
+            exit(1);
+            break;
+        }
+        global_def = global_def->next;
+    }
+    
+    // Add the symbol to the global linker
+    global_def = symbol_copy(def);
+    global_def->next = global_defs[index];
+    global_defs[index] = global_def;
+}
+
 void c64linker_link(c64linker_t *linker)
 {
     printf("LINKING\n");
@@ -140,29 +160,15 @@ void c64linker_link(c64linker_t *linker)
         for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
             Symbol *def = defs[i];
             while (def) {
-                // Add the symbol to the global linker
-                unsigned int index = hash(def->name);
-                // Search for the symbol in the global linker
-                Symbol *global_def = global_defs[index];
-                while (global_def) {
-                    if (strcmp(global_def->name, def->name) == 0) {
-                        printf("Symbol %s redefined in %s\n", def->name, obj->filename);
-                        exit(1);
-                        break;
-                    }
-                    global_def = global_def->next;
-                }
-                
-                // Add the symbol to the global linker
-                global_def = symbol_copy(def);
-                global_def->next = global_defs[index];
-                global_defs[index] = global_def;
+                add_symbol_to_linker_defs(global_defs, defs, def, obj);
                 def = def->next;
             }
         }
 
         obj = obj->next;
     }
+
+    symbol_table_resolve_global_defs(linker);
     
     
 

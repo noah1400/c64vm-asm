@@ -5,31 +5,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <c64asm_decl.h>
+// #include <c64asm_link.h>
+#include <c64asm_symbols.h>
 
-#define SYMBOL_TABLE_SIZE 64
 
-#define ADDR_UNDEFINED 0xFFFFFFFFFFFFFFFF
-
-typedef enum {
-    SYMBOL_TYPE_UNKNOWN,
-    SYMBOL_TYPE_LABEL,
-    SYMBOL_TYPE_CONSTANT,
-    SYMBOL_TYPE_VARIABLE,
-} SymbolType;
-
-typedef struct Symbol {
-    SymbolType type;
-    char *name;
-    uint64_t address;
-    struct Symbol *next;
-} Symbol;
-
-typedef struct {
-    char *filename;
-    Symbol *def_directives[SYMBOL_TABLE_SIZE];
-    Symbol *ref_directives[SYMBOL_TABLE_SIZE];
-    Symbol *table[SYMBOL_TABLE_SIZE];
-} SymbolTable;
 
 extern SymbolTable *current_table;
 
@@ -43,7 +23,11 @@ void symbol_table_add_def_directive(SymbolTable *table, const char *name);
 void symbol_table_add_ref_directive(SymbolTable *table, const char *name);
 Symbol *symbol_table_find_def_directive(SymbolTable *table, const char *name);
 Symbol *symbol_table_find_ref_directive(SymbolTable *table, const char *name);
+
 void symbol_table_resolve_def_directives(SymbolTable *table);
+void symbol_table_resolve_ref_directives(c64linker_t *linker); // resolve references to global symbols in all object files
+
+void symbol_table_resolve_global_defs(c64linker_t *linker);
 
 unsigned int hash(const char *str);
 

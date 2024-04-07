@@ -207,3 +207,41 @@ Symbol *symbol_copy(Symbol *symbol)
     copy->next = NULL;
     return copy;
 }
+
+Symbol *find_symbol_in_symbol_array(Symbol **array, const char *name)
+{
+    unsigned int index = hash(name);
+    Symbol *symbol = array[index];
+
+    while (symbol) {
+        if (strcmp(symbol->name, name) == 0) {
+            return symbol;
+        }
+        symbol = symbol->next;
+    }
+
+    return NULL;
+}
+
+void symbol_table_resolve_global_defs(c64linker_t *linker)
+{
+    c64link_OBJ_t *obj = linker->objs;
+    while (obj) {
+        Symbol **obj_defs = obj->symtab->def_directives;
+        for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
+            Symbol *def = obj_defs[i];
+            while (def) {
+                Symbol *global_def = find_symbol_in_symbol_array(linker->def_directives, def->name);
+                if (global_def) {
+                    def->address = global_def->address;
+                    def->type = global_def->type;
+                } else {
+                    fprintf(stderr, "Symbol %s exported but not defined!", def->name);
+                    exit(1);
+                }
+                def = def->next;
+            }
+        }
+        obj = obj->next;
+    }
+}
