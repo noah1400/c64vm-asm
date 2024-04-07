@@ -170,6 +170,6 @@ void c64linker_link(c64linker_t *linker)
 
     symbol_table_resolve_global_defs(linker);
     
-    
+    symbol_table_resolve_ref_directives(linker);
 
 }

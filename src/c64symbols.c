@@ -245,3 +245,26 @@ void symbol_table_resolve_global_defs(c64linker_t *linker)
         obj = obj->next;
     }
 }
+
+void symbol_table_resolve_ref_directives(c64linker_t *linker)
+{
+    c64link_OBJ_t *obj = linker->objs;
+    while (obj) {
+        Symbol **obj_refs = obj->symtab->ref_directives;
+        for (int i = 0; i < SYMBOL_TABLE_SIZE; i++) {
+            Symbol *ref = obj_refs[i];
+            while (ref) {
+                Symbol *global_def = find_symbol_in_symbol_array(linker->def_directives, ref->name);
+                if (global_def) {
+                    ref->address = global_def->address;
+                    ref->type = global_def->type;
+                } else {
+                    fprintf(stderr, "Symbol %s referenced but not defined!", ref->name);
+                    exit(1);
+                }
+                ref = ref->next;
+            }
+        }
+        obj = obj->next;
+    }
+}
