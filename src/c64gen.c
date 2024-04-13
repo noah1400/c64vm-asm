@@ -72,56 +72,20 @@ void c64gen_write_register(ASTNode *reg,FILE *f, uint64_t *ip)
     c64gen_write8(f, reg_num, ip);
 }
 
-void c64gen_first_pass(ASTNode *node, uint64_t *ip, SymbolTable *symbol_table)
+Symbol *c64gen_get_label(const char *label, SymbolTable *symbol_table)
 {
-    if (!node)
+    Symbol *label_symbol = symbol_table_find(symbol_table, label, SYMBOL_TYPE_LABEL);
+    if (label_symbol)
     {
-        return;
+        return label_symbol;
     }
-    printf("FIRST PASS: NODE AT IP: %lu\n", *ip);
-    switch (node->type)
+    label_symbol = symbol_table_find_ref_directive(symbol_table, label);
+    if (!label_symbol)
     {
-    case NODE_LABEL_DEF:
-        printf("FIRST PASS: Label Definition: %s\n", node->data.label);
-        Symbol *label = symbol_table_find(symbol_table, node->data.label, SYMBOL_TYPE_LABEL);
-        if (!label)
-        {
-            fprintf(stderr, "Undefined label %s\n", node->data.label);
-            exit(1);
-        }
-        printf("Set address for label %s: %lu\n", node->data.label, *ip);
-        label->address = *ip;
-        break;
-    case NODE_LABEL_REF:
-        printf("FIRST PASS: Label Reference: %s\n", node->data.label);
-        Symbol *ref = symbol_table_find(symbol_table, node->data.label, SYMBOL_TYPE_LABEL);
-        if (!ref)
-        {
-            fprintf(stderr, "Undefined label %s\n", node->data.label);
-            exit(1);
-        }
-        *ip += sizeof(uint64_t);
-        break;
-    case NODE_INSTRUCTION:
-        printf("FIRST PASS: Instruction: %s\n", node->data.instruction.mnemonic);
-        *ip += sizeof(uint16_t);
-        ASTNode *op1 = node->data.instruction.operands[0];
-        ASTNode *op2 = node->data.instruction.operands[1];
-        c64gen_first_pass(op1, ip, symbol_table);
-        c64gen_first_pass(op2, ip, symbol_table);
-        break;
-    case NODE_IMMEDIATE:
-        *ip += sizeof(uint64_t);
-        break;
-    case NODE_REGISTER:
-        *ip += sizeof(uint8_t);
-        break;
-    default:
-        fprintf(stderr, "Unknown AST node type %d\n", node->type);
+        fprintf(stderr, "Undefined label %s\n", label);
         exit(1);
     }
-
-    
+    return label_symbol;
 }
 
 void c64gen_write_node(ASTNode *node, FILE *f, uint64_t *ip, SymbolTable *symbol_table)
@@ -130,7 +94,8 @@ void c64gen_write_node(ASTNode *node, FILE *f, uint64_t *ip, SymbolTable *symbol
     {
     case NODE_LABEL_DEF:
         printf("GEN: Label Definition: %s\n", node->data.label);
-        Symbol *label = symbol_table_find(symbol_table, node->data.label, SYMBOL_TYPE_LABEL);
+        // Symbol *label = symbol_table_find(symbol_table, node->data.label, SYMBOL_TYPE_LABEL);
+        Symbol *label = c64gen_get_label(node->data.label, symbol_table);
         if (label->address != *ip)
         {
             fprintf(stderr, "Address mismatch for label %s: %lu != %lu\n", node->data.label, label->address, *ip);
@@ -140,7 +105,7 @@ void c64gen_write_node(ASTNode *node, FILE *f, uint64_t *ip, SymbolTable *symbol
         break;
     case NODE_LABEL_REF:
         printf("GEN: Label Reference: %s\n", node->data.label);
-        Symbol *ref = symbol_table_find(symbol_table, node->data.label, SYMBOL_TYPE_LABEL);
+        Symbol *ref = c64gen_get_label(node->data.label, symbol_table);
         if (!ref)
         {
             fprintf(stderr, "Undefined label %s\n", node->data.label);
@@ -162,49 +127,38 @@ void c64gen_write_node(ASTNode *node, FILE *f, uint64_t *ip, SymbolTable *symbol
         c64gen_write_register(node,f, ip);
         break;
     default:
-        fprintf(stderr, "Unknown AST node type %d\n", node->type);
-        exit(1);
+        break;
     }
 }
 
-void c64gen_gen(ASTNode *ast, const char *filename, SymbolTable *symbol_table)
+void c64gen_gen(c64link_OBJ_t *objs)
 {
     // Open the output file for writing
-    FILE *f = fopen(filename, "wb");
+    FILE *f = fopen("out.bin", "wb");
 
     // Check if the file was opened successfully
     if (!f)
     {
-        fprintf(stderr, "Failed to open output file %s\n", filename);
+        fprintf(stderr, "Failed to open output file %s\n", "out.prg");
         exit(1);
     }
 
     // Initialize the instruction pointer to 0
     uint64_t ip = 0;
 
-
-
-    // Traverse the AST and generate code
-    ASTNode *current = ast;
-
+    // Traverse the list of object files
+    c64link_OBJ_t *current = objs;
+    ASTNode *ast = NULL;
     while (current != NULL)
     {
-        // Scan code and set label addresses
-        c64gen_first_pass(current, &ip, symbol_table);
-        // Move to the next node in the AST
-        current = current->next;
-    }
-
-    // Reset the instruction pointer to 0
-    ip = 0;
-    // Reset the current node to the start of the AST
-    current = ast;
-
-    while (current != NULL)
-    {
-        // Write the current node to the output file
-        c64gen_write_node(current, f, &ip, symbol_table);
-        // Move to the next node in the AST
+        printf("\n\nWriting object file %s\n", current->filename);
+        ast = current->ast;
+        // Traverse the AST and generate code
+        while (ast != NULL)
+        {
+            c64gen_write_node(ast, f, &ip, current->symtab);
+            ast = ast->next;
+        }
         current = current->next;
     }
 

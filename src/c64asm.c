@@ -57,6 +57,7 @@ int main(int argc, char **argv)
     c64linker_link(global_linker);
     ast_print(current_ast);
     // c64gen_gen(current_ast, "out.bin", current_table);
+    c64gen_gen(global_linker->objs);
     c64linker_free(global_linker);
     return 0;
 }

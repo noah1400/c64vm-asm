@@ -13,6 +13,6 @@ void c64gen_write32(FILE *f, uint32_t value, uint64_t *ip);
 void c64gen_write16(FILE *f, uint16_t value, uint64_t *ip);
 void c64gen_write8(FILE *f, uint8_t value, uint64_t *ip);
 
-void c64gen_gen(ASTNode *ast, const char *filename, SymbolTable *table);
+void c64gen_gen(c64link_OBJ_t *objs);
 
 #endif // c64asm_gen_h
