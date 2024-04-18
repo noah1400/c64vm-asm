@@ -5,6 +5,7 @@
     #include <stdlib.h>
     #include <stdint.h>
     extern int line_no;
+    extern int error_count;
 
     void add_label(char *label);
     ASTNode *add_label_def_node(char *label);
@@ -32,7 +33,7 @@
 %token <imm> NUMBER 
 %token <imm> HEX
 %token <byte> REGISTER
-%token EOL
+%token <str> EOL
 %token <opcode> LDI 
 %token <opcode> ST
 %token <opcode> PUSH
@@ -126,21 +127,18 @@
 
 c64asm: 
     | c64asm line opt_comment EOL
-    | c64asm error EOL { printf("Error on line %d\n", line_no); }
+    | c64asm error EOL { error_count++; }
     ;
 
 line: 
-    | DEF LABEL_REF { 
-        printf("defined label: %s\n", $2); 
+    | DEF LABEL_REF {  
         add_def_directive($2);
         }
-    | REF LABEL_REF { 
-        printf("referenced label: %s\n", $2); 
+    | REF LABEL_REF {
         add_ref_directive($2);
         }
     | instruction
-    | LABEL_DEF { 
-        printf("%s:\n", $1);
+    | LABEL_DEF {
         add_label($1);
         add_label_def_node($1);
         }
@@ -340,32 +338,26 @@ immediate: NUMBER { $$ = $1; }
 #include <c64asm_symbols.h>
 
 void add_label(char *label) {
-    printf("Label: %s\n", label);
 
     if (symbol_table_find_any_type(current_table, label) != NULL 
         || symbol_table_find_ref_directive(current_table, label) != NULL ){
-        fprintf(stderr, "Warning: Label %s already defined\n", label);
         yyerror("Label already defined");
     }
     symbol_table_add(current_table, SYMBOL_TYPE_LABEL, label, ADDR_UNDEFINED);
 }
 
 void add_def_directive(char *label) {
-    printf("Def: %s\n", label);
     if (symbol_table_find_ref_directive(current_table, label) != NULL
         || symbol_table_find_def_directive(current_table, label) != NULL) {
-        fprintf(stderr, "Warning: Label %s already referenced\n", label);
         yyerror("Label already referenced");
         }
     symbol_table_add_def_directive(current_table, label);
 }
 
 void add_ref_directive(char *label) {
-    printf("Ref: %s\n", label);
     if (symbol_table_find_ref_directive(current_table, label) != NULL
         || symbol_table_find_def_directive(current_table, label) != NULL
         || symbol_table_find_any_type(current_table, label) != NULL ) {
-        fprintf(stderr, "Warning: Label %s already defined\n", label);
         yyerror("Label already defined");
     }
     symbol_table_add_ref_directive(current_table, label);

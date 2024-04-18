@@ -8,6 +8,8 @@ SymbolTable *current_table = NULL;
 ASTNode *current_ast = NULL;
 c64linker_t *global_linker = NULL;
 
+char *current_filename = NULL;
+
 int main(int argc, char **argv)
 {
 
@@ -26,6 +28,7 @@ int main(int argc, char **argv)
     for (int i = 1; i < argc; i++)
     {
         printf("Parsing %s\n\n", argv[i]);
+        current_filename = argv[i];
         yyin = fopen(argv[i], "r");
         if (!yyin)
         {
@@ -41,7 +44,7 @@ int main(int argc, char **argv)
         int parse_result = yyparse();
         fclose(yyin);
 
-        if (parse_result)
+        if (parse_result || error_count > 0)
         {
             fprintf(stderr, "Parse failed\n");
             return 1;
@@ -66,10 +69,16 @@ void yyerror(char *s)
 {
     if (strcmp(s, "syntax error") == 0)
     {
-        fprintf(stderr, "Fehler in Zeile %d: Unerwartetes Symbol '%s'\n", line_no, yytext);
+        fprintf(stderr, "Error on line %d in file %s: Unknown Symbol '%s'\n", line_no, current_filename, yytext);
     }
     else
     {
-        fprintf(stderr, "Fehler in Zeile %d: %s\n", line_no, s);
+        fprintf(stderr, "Error on line %d in file: %s\n", line_no, current_filename, s);
+    }
+    if (current_line)
+    {
+        fprintf(stderr, "%d:    %s\n\n", line_no, current_line);
+        free(current_line);
+        current_line = NULL;
     }
 }

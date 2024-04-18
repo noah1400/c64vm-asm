@@ -3,6 +3,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 int line_no = 1;
+int error_count = 0;
+char *current_line = NULL;
+
+void addToLine(char *str) {
+    if (current_line == NULL) {
+        current_line = strdup(str);
+    } else {
+        current_line = realloc(current_line, strlen(current_line) + strlen(str) + 1);
+        strcat(current_line, str);
+    }
+}
 %}
 
 %option noyywrap
@@ -117,115 +128,125 @@ LABEL_DEF ":"[a-zA-Z_][a-zA-Z0-9_]*
 
 %%
 
-{REF}    { return REF; }
-{DEF}    { return DEF; }
+{REF}    { addToLine(yytext);return REF; }
+{DEF}    { addToLine(yytext);return DEF; }
 
-{LDI}    { return LDI; }
-{ST}     { return ST; }
-{PUSH}   { return PUSH; }
-{POP}    { return POP; }
-{JMP}    { return JMP; }
+{LDI}    { addToLine(yytext);return LDI; }
+{ST}     { addToLine(yytext);return ST; }
+{PUSH}   { addToLine(yytext);return PUSH; }
+{POP}    { addToLine(yytext);return POP; }
+{JMP}    { addToLine(yytext);return JMP; }
 
-{LDBI}   { return LDBI; }
-{LDWI}   { return LDWI; }
-{LDDI}   { return LDDI; }
-{LDM}    { return LDM; }
-{LDBM}   { return LDBM; }
-{LDWM}   { return LDWM; }
-{LDDM}   { return LDDM; }
-{STB}    { return STB; }
-{STW}    { return STW; }
-{STD}    { return STD; }
-{TF}     { return TF; }
+{LDBI}   { addToLine(yytext);return LDBI; }
+{LDWI}   { addToLine(yytext);return LDWI; }
+{LDDI}   { addToLine(yytext);return LDDI; }
+{LDM}    { addToLine(yytext);return LDM; }
+{LDBM}   { addToLine(yytext);return LDBM; }
+{LDWM}   { addToLine(yytext);return LDWM; }
+{LDDM}   { addToLine(yytext);return LDDM; }
+{STB}    { addToLine(yytext);return STB; }
+{STW}    { addToLine(yytext);return STW; }
+{STD}    { addToLine(yytext);return STD; }
+{TF}     { addToLine(yytext);return TF; }
 
-{ADDI}   { return ADDI; }
-{SUBI}   { return SUBI; }
-{MULI}   { return MULI; }
-{DIVI}   { return DIVI; }
-{MODI}   { return MODI; }
-{MULIS}  { return MULIS; }
-{DIVIS}  { return DIVIS; }
+{ADDI}   { addToLine(yytext);return ADDI; }
+{SUBI}   { addToLine(yytext);return SUBI; }
+{MULI}   { addToLine(yytext);return MULI; }
+{DIVI}   { addToLine(yytext);return DIVI; }
+{MODI}   { addToLine(yytext);return MODI; }
+{MULIS}  { addToLine(yytext);return MULIS; }
+{DIVIS}  { addToLine(yytext);return DIVIS; }
 
-{ADD}    { return ADD; }
-{SUB}    { return SUB; }
-{MUL}    { return MUL; }
-{DIV}    { return DIV; }
-{MOD}    { return MOD; }
-{MULS}   { return MULS; }
-{DIVS}   { return DIVS; }
+{ADD}    { addToLine(yytext);return ADD; }
+{SUB}    { addToLine(yytext);return SUB; }
+{MUL}    { addToLine(yytext);return MUL; }
+{DIV}    { addToLine(yytext);return DIV; }
+{MOD}    { addToLine(yytext);return MOD; }
+{MULS}   { addToLine(yytext);return MULS; }
+{DIVS}   { addToLine(yytext);return DIVS; }
 
-{ANDI}   { return ANDI; }
-{ORI}    { return ORI; }
-{XORI}   { return XORI; }
-{NOTI}   { return NOTI; }
-{SHLI}   { return SHLI; }
-{SHRI}   { return SHRI; }
-{RORI}   { return RORI; }
-{ROLI}   { return ROLI; }
+{ANDI}   { addToLine(yytext);return ANDI; }
+{ORI}    { addToLine(yytext);return ORI; }
+{XORI}   { addToLine(yytext);return XORI; }
+{NOTI}   { addToLine(yytext);return NOTI; }
+{SHLI}   { addToLine(yytext);return SHLI; }
+{SHRI}   { addToLine(yytext);return SHRI; }
+{RORI}   { addToLine(yytext);return RORI; }
+{ROLI}   { addToLine(yytext);return ROLI; }
 
-{AND}    { return AND; }
-{OR}     { return OR; }
-{XOR}    { return XOR; }
-{NOT}    { return NOT; }
-{SHL}    { return SHL; }
-{SHR}    { return SHR; }
-{ROR}    { return ROR; }
-{ROL}    { return ROL; }
+{AND}    { addToLine(yytext);return AND; }
+{OR}     { addToLine(yytext);return OR; }
+{XOR}    { addToLine(yytext);return XOR; }
+{NOT}    { addToLine(yytext);return NOT; }
+{SHL}    { addToLine(yytext);return SHL; }
+{SHR}    { addToLine(yytext);return SHR; }
+{ROR}    { addToLine(yytext);return ROR; }
+{ROL}    { addToLine(yytext);return ROL; }
 
-{CMP}    { return CMP; }
-{CMPI}   { return CMPI; }
+{CMP}    { addToLine(yytext);return CMP; }
+{CMPI}   { addToLine(yytext);return CMPI; }
 
-{JEQ}    { return JEQ; }
-{JNE}    { return JNE; }
-{JGT}    { return JGT; }
-{JLT}    { return JLT; }
-{JGE}    { return JGE; }
-{JLE}    { return JLE; }
+{JEQ}    { addToLine(yytext);return JEQ; }
+{JNE}    { addToLine(yytext);return JNE; }
+{JGT}    { addToLine(yytext);return JGT; }
+{JLT}    { addToLine(yytext);return JLT; }
+{JGE}    { addToLine(yytext);return JGE; }
+{JLE}    { addToLine(yytext);return JLE; }
 
-{BRAR}   { return BRAR; }
-{BEQR}   { return BEQR; }
-{BNER}   { return BNER; }
-{BGTR}   { return BGTR; }
-{BLTR}   { return BLTR; }
-{BGER}   { return BGER; }
-{BLER}   { return BLER; }
+{BRAR}   { addToLine(yytext);return BRAR; }
+{BEQR}   { addToLine(yytext);return BEQR; }
+{BNER}   { addToLine(yytext);return BNER; }
+{BGTR}   { addToLine(yytext);return BGTR; }
+{BLTR}   { addToLine(yytext);return BLTR; }
+{BGER}   { addToLine(yytext);return BGER; }
+{BLER}   { addToLine(yytext);return BLER; }
 
-{RET}    { return RET; }
+{RET}    { addToLine(yytext);return RET; }
 
-{PUSHI}  { return PUSHI; }
+{PUSHI}  { addToLine(yytext);return PUSHI; }
 
-{CALL}   { return CALL; }
-{CALLR}  { return CALLR; }
-{RTC}    { return RTC; }
+{CALL}   { addToLine(yytext);return CALL; }
+{CALLR}  { addToLine(yytext);return CALLR; }
+{RTC}    { addToLine(yytext);return RTC; }
 
-{CLC}    { return CLC; }
-{SEC}    { return SEC; }
-{CLZ}    { return CLZ; }
-{SEZ}    { return SEZ; }
-{CLN}    { return CLN; }
-{SEN}    { return SEN; }
-{CLV}    { return CLV; }
-{SEV}    { return SEV; }
-{CLI}    { return CLI; }
-{SEI}    { return SEI; }
+{CLC}    { addToLine(yytext);return CLC; }
+{SEC}    { addToLine(yytext);return SEC; }
+{CLZ}    { addToLine(yytext);return CLZ; }
+{SEZ}    { addToLine(yytext);return SEZ; }
+{CLN}    { addToLine(yytext);return CLN; }
+{SEN}    { addToLine(yytext);return SEN; }
+{CLV}    { addToLine(yytext);return CLV; }
+{SEV}    { addToLine(yytext);return SEV; }
+{CLI}    { addToLine(yytext);return CLI; }
+{SEI}    { addToLine(yytext);return SEI; }
 
-{INT}    { return INT; }
-{RTI}    { return RTI; }
+{INT}    { addToLine(yytext);return INT; }
+{RTI}    { addToLine(yytext);return RTI; }
 
-{NOP}    { return NOP; }
-{HLT}    { return HLT; }
+{NOP}    { addToLine(yytext);return NOP; }
+{HLT}    { addToLine(yytext);return HLT; }
 
-{NUMBER} { yylval.imm = strtoull(yytext+1, NULL, 10); return NUMBER; }
-{HEX} { yylval.imm = strtoull(yytext+1, NULL, 16); return NUMBER; }
-{REGISTER} { yylval.byte = (uint8_t)strtoul(yytext+1, NULL, 10); return REGISTER; }
-{COMMENT} { yylval.str = strdup(yytext); return COMMENT;}
+{NUMBER} { addToLine(yytext);yylval.imm = strtoull(yytext+1, NULL, 10); return NUMBER; }
+{HEX} { addToLine(yytext);yylval.imm = strtoull(yytext+1, NULL, 16); return NUMBER; }
+{REGISTER} { addToLine(yytext);yylval.byte = (uint8_t)strtoul(yytext+1, NULL, 10); return REGISTER; }
+{COMMENT} { addToLine(yytext);yylval.str = strdup(yytext); return COMMENT;}
 
-{LABEL_DEF} { yylval.str = strdup(yytext+1); return LABEL_DEF; }
-{LABEL_REF} { yylval.str = strdup(yytext); return LABEL_REF; }
+{LABEL_DEF} { addToLine(yytext);yylval.str = strdup(yytext+1); return LABEL_DEF; }
+{LABEL_REF} { addToLine(yytext);yylval.str = strdup(yytext); return LABEL_REF; }
 
-{EOL} { line_no++; return EOL; }
+{EOL} { 
+    line_no++;
+    if (current_line){
+    yylval.str = strdup(current_line);
+    free(current_line);
+    current_line = NULL;
+    }else{
+        yylval.str = strdup("");
+    }
+    return EOL; 
+}
 
-[ \t]+ { /* ignore whitespace */ }
+[ \t]+ { addToLine(yytext); }
 
 . { return yytext[0]; }
 

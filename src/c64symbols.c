@@ -28,7 +28,6 @@ SymbolTable *symbol_table_init(char *filename)
 void symbol_table_add(SymbolTable *table, SymbolType type, const char *name, uint64_t address)
 {
     Symbol *symbol = malloc(sizeof(Symbol));
-    printf("Adding symbol %s of type %d at address %lu\n", name, type, address);
     symbol->name = strdup(name);
     symbol->type = type;
     symbol->address = address;
