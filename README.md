@@ -35,6 +35,8 @@ The current usage involves running the compiled `c64asm` executable, providing i
 ```sh
 ./c64asm input.c64asm input2.c64asm input3.c64asm
 ```
+The program will initiate execution starting from the first line of the last provided file (`input3.c64asm`).
+
 ## Assembly language
 ```asm
 DEF loop_start ; export label for usage in other files
