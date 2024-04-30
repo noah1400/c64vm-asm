@@ -1,5 +1,0 @@
-REF imported_label
-
-:check_loop_start
-
-JMP imported_label

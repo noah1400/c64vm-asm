@@ -84,6 +84,7 @@ JLT     "JLT"
 JGE     "JGE"
 JLE     "JLE"
 
+BRA     "BRA"
 BRAR    "BRAR"
 BEQR    "BEQR"
 BNER    "BNER"
@@ -193,6 +194,7 @@ LABEL_DEF ":"[a-zA-Z_][a-zA-Z0-9_]*
 {JGE}    { addToLine(yytext);return JGE; }
 {JLE}    { addToLine(yytext);return JLE; }
 
+{BRA}    { addToLine(yytext);return BRA; }
 {BRAR}   { addToLine(yytext);return BRAR; }
 {BEQR}   { addToLine(yytext);return BEQR; }
 {BNER}   { addToLine(yytext);return BNER; }

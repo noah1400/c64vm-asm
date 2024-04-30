@@ -62,6 +62,8 @@
 #define OP_JGE (uint16_t)0x0066
 #define OP_JLE (uint16_t)0x0067
 
+#define OP_BRA (uint16_t)0x0071
+
 #define OP_BRAR (uint16_t)0x0171
 #define OP_BEQR (uint16_t)0x0172
 #define OP_BNER (uint16_t)0x0173

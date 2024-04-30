@@ -1,6 +1,29 @@
-DEF imported_label
+DEF SQRT_SUBROUTINE
 
-:imported_label
-    ; code that uses imported_label
-    RET
-    
+:SQRT_SUBROUTINE
+    PUSH R2           ; Save R2 on stack
+    PUSH R3           ; Save R3 on stack
+    PUSH R4           ; Save R4 on stack
+
+    TF R2, R1         ; Copy R1 to R2, initial guess (assume starting guess is the number itself)
+    SHRI R2, $1        ; R2 = R2 / 2 (half the number as initial guess)
+
+    LDI r4, $20    ; Number of iterations, adjust based on required precision
+
+:LOOP
+    TF R3, R1         ; Copy R1 to R3 for division
+    DIV R3, R2        ; R3 = R1 / R2
+    ADD R2, R3        ; R2 = R2 + R3
+    SHRI R2, $1        ; R2 = R2 / 2, new guess
+
+    SUBI R4, $1        ; Decrement R4
+    CMPI R4, $0        ; Check if R4 is zero
+    JNE LOOP          ; If R4 is not zero, loop again
+
+    TF R1, R2         ; Copy the final guess back to R1
+
+    POP R4            ; Restore R4 from stack
+    POP R3            ; Restore R3 from stack
+    POP R2            ; Restore R2 from stack
+
+    RET               ; Return from subroutine

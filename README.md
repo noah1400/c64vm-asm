@@ -33,9 +33,9 @@ To compile the **c64vm-asm** project, follow these steps:
 The current usage involves running the compiled `c64asm` executable, providing it with input filenames as arguments:
 
 ```sh
-./c64asm input.c64asm input2.c64asm input3.c64asm
+./c64asm input2.c64asm input.c64asm
 ```
-The program will initiate execution starting from the first line of the last provided file (`input3.c64asm`).
+The program will initiate execution starting from the first line of the last provided file (`input.c64asm`).
 
 ## Assembly language
 ```asm

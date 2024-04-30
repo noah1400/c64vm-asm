@@ -88,6 +88,7 @@
 %token <opcode> JLT
 %token <opcode> JGE
 %token <opcode> JLE
+%token <opcode> BRA
 %token <opcode> BRAR
 %token <opcode> BEQR
 %token <opcode> BNER
@@ -292,6 +293,9 @@ instruction:
         }
     | CMPI REGISTER ',' immediate {
             add_instruction_node("CMPI", OP_CMPI, create_register_node($2), create_immediate_node($4));
+        }
+    | BRA LABEL_REF {
+            add_instruction_node("BRA", OP_BRA, create_label_ref_node($2), NULL);
         }
     | JEQ LABEL_REF {
             add_instruction_node("JEQ", OP_JEQ, create_label_ref_node($2), NULL);
