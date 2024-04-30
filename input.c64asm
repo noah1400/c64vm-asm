@@ -1,6 +1,6 @@
 REF SQRT_SUBROUTINE
 
-LDI r1, $7919         ; Load the number to check for primality
+LDI r1, $87178291199        ; Load the number to check for primality
 
 TF r3, r1             ; Copy r1 to r3 to keep the original number intact
 CMPI r1, $2           ; Compare the number with 2
@@ -20,7 +20,7 @@ TF r4, r1             ; Copy the result back to r4 to use as limit in the loop
 LDI r5, $3            ; Start divisor from 3
 
 :LOOP
-CMP r4, r5            ; Compare divisor with sqrt(n)
+CMP r5, r4            ; Compare divisor with sqrt(n)
 JGT PRIME             ; If divisor > sqrt(n), it is prime
 
 TF r6, r3             ; Copy the number to r6 for modulus operation
