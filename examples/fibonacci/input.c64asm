@@ -1,0 +1,18 @@
+LDI r3, $50       ; Calculate the 50th Fibonacci number
+LDI r1, $0         ; First Fibonacci number (F0 = 0)
+LDI r2, $1         ; Second Fibonacci number (F1 = 1)
+LDI r4, $0         ; Loop counter
+
+:loop
+    CMP r4, r3          
+    JEQ end            
+
+    PUSH r1 ; Save r1
+    ADD r1, r2 ; r1 = r1 + r2
+    POP r2 ; Restore r1 into r2
+    ADDI r4, $1 ; Increment counter
+
+    JMP loop
+
+:end
+    HLT

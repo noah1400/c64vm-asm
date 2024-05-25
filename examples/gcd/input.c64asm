@@ -1,0 +1,20 @@
+
+LDI r1, $288      ; Example: GCD(288, 78)
+LDI r2, $78
+
+:gcd_loop
+    CMPI r2, $0     ; Check if r2 (b) is zero
+    JEQ gcd_done   ; If zero, GCD is in r1 (a)
+
+    ; Calculate remainder (a % b)
+    MOD r1, r2       ; r1 = r1 % r2 (remainder)
+
+    ; Prepare for next iteration
+    PUSH r1          ; Save the remainder on the stack
+    TF r1, r2       ; Move r2 (b) to r1 (a)
+    POP r2           ; Restore the remainder to r2 (b)
+    JMP gcd_loop   ; Repeat the loop
+
+:gcd_done
+    HLT              ; Halt execution
+

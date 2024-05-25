@@ -58,4 +58,6 @@ dkms.conf
 *.bin
 *.c64asm
 
+!examples/**/*.c64asm
+
 bin/

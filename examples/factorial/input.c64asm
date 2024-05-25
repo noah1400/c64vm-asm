@@ -1,0 +1,18 @@
+
+LDI r1, $12 ; Calculate 12!
+
+LDI r2, $1 ; Accumulator for the result
+LDI r3, $0 ; Counter
+
+:loop
+    CMP r3, r1
+    JEQ end
+
+    ADDI r3, $1
+    MUL r2, r3
+
+    JMP loop
+
+:end
+
+    HLT
